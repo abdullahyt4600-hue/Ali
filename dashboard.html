@@ -25,27 +25,26 @@ main{padding:40px;text-align:center;}
 </head>
 <body>
 <header>
-  <div class="logo">👨‍💻 Your Dashboard</div>
-  <div class="dropdown">
-    <button class="dropbtn">Account ▾</button>
-    <div class="dropdown-content">
-      <a href="#" onclick="changePass()">Change Password</a>
-      <a href="#" onclick="logout()">Logout</a>
-    </div>
-  </div>
+<div class="logo">👨‍💻 Your Dashboard</div>
+<div class="dropdown">
+<button class="dropbtn">Account ▾</button>
+<div class="dropdown-content">
+<a href="#" onclick="changePass()">Change Password</a>
+<a href="#" onclick="logout()">Logout</a>
+</div>
+</div>
 </header>
 <main>
-  <h2 id="welcome"></h2>
-  <div class="tools">
-    <div class="tool"><h3>WiFi Tool</h3><p>Simulated WiFi cracking tool.</p></div>
-    <div class="tool"><h3>IP Camera Viewer</h3><p>Simulated camera viewer.</p></div>
-    <div class="tool"><h3>IP Tracker</h3><p>Track IP locations.</p></div>
-    <div class="tool"><h3>Mobile Tools</h3><p>Simulated mobile exploits.</p></div>
-  </div>
-  <button class="paid">$1000 - Unlock Paid Course</button>
+<h2 id="welcome"></h2>
+<div class="tools">
+<div class="tool"><h3>WiFi Tool</h3><p>Simulated WiFi cracking tool.</p></div>
+<div class="tool"><h3>IP Camera Viewer</h3><p>Simulated camera viewer.</p></div>
+<div class="tool"><h3>IP Tracker</h3><p>Track IP locations.</p></div>
+<div class="tool"><h3>Mobile Tools</h3><p>Simulated mobile exploits.</p></div>
+</div>
+<button class="paid">$1000 - Unlock Paid Course</button>
 </main>
 
-<!-- Firebase v8 SDKs -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -59,36 +58,37 @@ const firebaseConfig = {
   messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
   appId: "YOUR_APP_ID"
 };
-if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
+const db = firebase.firestore();
 
-// check login state
-auth.onAuthStateChanged(user => {
-  if (user) {
-    document.getElementById('welcome').textContent =
-      "Welcome, " + user.email;
+auth.onAuthStateChanged(user=>{
+  if(user){
+    // load only this user's data
+    db.collection("users").doc(user.uid).get()
+      .then(doc=>{
+        if(doc.exists){
+          document.getElementById('welcome').textContent = "Welcome, " + doc.data().email;
+        }
+      });
   } else {
-    window.location.href = "index.html";
+    window.location.href="index.html";
   }
 });
 
-// logout
-function logout() {
-  auth.signOut().then(() => {
-    window.location.href = "index.html";
-  });
+function logout(){
+  auth.signOut().then(()=>window.location.href="index.html");
 }
 
-// change password
-function changePass() {
+function changePass(){
   const np = prompt("Enter new password:");
-  if (!np) return;
+  if(!np) return;
   const user = auth.currentUser;
-  if (user) {
+  if(user){
     user.updatePassword(np)
-      .then(() => alert("Password updated"))
-      .catch(err => alert("Error: " + err.message));
+      .then(()=>alert("Password updated"))
+      .catch(err=>alert("Error: " + err.message));
   }
 }
 </script>
