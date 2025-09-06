@@ -3,20 +3,58 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Admin Panel - Ali Hacking Course</title>
+  <title>Admin Panel - Login to Your Account</title>
   <style>
-    body{font-family:'Orbitron',sans-serif;background:#121212;color:#fff;padding:20px;}
-    h1{color:#ce93d8;}
-    table{width:100%;border-collapse:collapse;margin-top:20px;}
-    th,td{padding:12px;border-bottom:1px solid #444;text-align:left;}
-    th{background:#8e24aa;}
-    tr:hover{background:#333;}
-    .logout{margin-top:20px;padding:10px 20px;background:#8e24aa;border:none;color:#fff;cursor:pointer;}
-    .logout:hover{background:#6a1b9a;}
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+    body {
+      margin:0;
+      font-family:'Orbitron',sans-serif;
+      background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+      color:#fff;
+      padding:20px;
+    }
+    h1{ color:#a67fff; text-align:center; margin-bottom:20px; }
+    .admin-msg {
+      text-align:center;
+      margin-bottom:10px;
+      font-weight:bold;
+      color:#b39ddb;
+    }
+    table {
+      width:100%;
+      border-collapse:collapse;
+      background:rgba(0,0,0,0.85);
+      border-radius:10px;
+      overflow:hidden;
+      margin-top:20px;
+    }
+    th, td {
+      padding:12px;
+      border-bottom:1px solid #444;
+      text-align:left;
+    }
+    th { background:#8e24aa; }
+    tr:hover { background:#3a3a5c; }
+    .logout {
+      margin-top:20px;
+      padding:12px 20px;
+      background:#8e24aa;
+      border:none;
+      color:#fff;
+      font-weight:bold;
+      cursor:pointer;
+      border-radius:8px;
+      display:block;
+      margin-left:auto;
+      margin-right:auto;
+    }
+    .logout:hover { background:#6a1b9a; }
   </style>
 </head>
 <body>
   <h1>Admin Dashboard</h1>
+  <div class="admin-msg" id="adminMsg">Welcome, Admin!</div>
+  
   <table>
     <thead>
       <tr>
@@ -26,6 +64,7 @@
     </thead>
     <tbody id="userList"></tbody>
   </table>
+
   <button class="logout" onclick="logout()">Logout</button>
 
   <!-- Firebase SDKs -->
@@ -44,41 +83,41 @@
       measurementId: "G-FH5BSP31E7"
     };
 
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+
     const auth = firebase.auth();
     const db = firebase.firestore();
+    const adminEmail = "youradminemail@example.com"; // Replace with your email
 
-    // auth state check
     auth.onAuthStateChanged(user => {
       if (!user) {
         window.location.href = "index.html";
+      } else if (user.email !== adminEmail) {
+        alert("You are not authorized to view this page!");
+        auth.signOut().then(() => window.location.href = "index.html");
       } else {
+        document.getElementById("adminMsg").style.display = "block";
         loadUsers();
       }
     });
 
-    // Firestore se sab users load karna
     function loadUsers() {
-      db.collection("users").orderBy("createdAt", "desc").get().then(snapshot => {
-        const tbody = document.getElementById("userList");
-        tbody.innerHTML = "";
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          const createdAt = data.createdAt ? data.createdAt.toDate().toLocaleString() : "N/A";
-          const tr = document.createElement("tr");
-          tr.innerHTML = `<td>${data.email}</td><td>${createdAt}</td>`;
-          tbody.appendChild(tr);
-        });
-      });
+      db.collection("users").orderBy("createdAt", "desc").get()
+        .then(snapshot => {
+          const tbody = document.getElementById("userList");
+          tbody.innerHTML = "";
+          snapshot.forEach(doc => {
+            const data = doc.data();
+            const createdAt = data.createdAt ? data.createdAt.toDate().toLocaleString() : "N/A";
+            const tr = document.createElement("tr");
+            tr.innerHTML = `<td>${data.email}</td><td>${createdAt}</td>`;
+            tbody.appendChild(tr);
+          });
+        }).catch(err => console.error(err));
     }
 
-    // logout function
     function logout() {
-      auth.signOut().then(() => {
-        window.location.href = "index.html";
-      });
+      auth.signOut().then(() => window.location.href = "index.html");
     }
   </script>
 </body>
