@@ -52,4 +52,18 @@ function loadUsers(){
   db.collection("users").orderBy("createdAt","desc").get()
     .then(snapshot=>{
       const tbody=document.getElementById("userList");
-     
+      tbody.innerHTML="";
+      snapshot.forEach(doc=>{
+        const data=doc.data();
+        const createdAt=data.createdAt ? data.createdAt.toDate().toLocaleString():"N/A";
+        const tr=document.createElement("tr");
+        tr.innerHTML=`<td>${data.email}</td><td>${createdAt}</td>`;
+        tbody.appendChild(tr);
+      });
+    }).catch(err=>console.error(err));
+}
+
+function logout(){ auth.signOut().then(()=>window.location.href="index.html"); }
+</script>
+</body>
+</html>
