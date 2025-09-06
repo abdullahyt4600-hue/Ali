@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Create Account</title>
+<title>Sign Up</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
 body{margin:0;font-family:'Orbitron',sans-serif;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;}
@@ -41,10 +41,10 @@ const firebaseConfig = {
   projectId: "authdomain-b606b",
   storageBucket: "authdomain-b606b.firebasestorage.app",
   messagingSenderId: "374508656476",
-  appId: "1:374508656476:web:1a1affe311734602bc5399",
-  measurementId: "G-FH5BSP31E7"
+  appId: "1:374508656476:web:1a1affe311734602bc5399"
 };
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+
 const auth = firebase.auth();
 const db = firebase.firestore();
 
@@ -55,7 +55,7 @@ function signup(){
   const msg = document.getElementById("msg");
   msg.textContent = "";
 
-  if(!email || !password || !confirm){ msg.textContent = "All fields are required"; return; }
+  if(!email || !password || !confirm){ msg.textContent="All fields required"; return; }
   if(password !== confirm){ msg.textContent="Passwords do not match"; return; }
   if(password.length<6){ msg.textContent="Password must be at least 6 characters"; return; }
 
@@ -66,10 +66,7 @@ function signup(){
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
     })
-    .then(()=>{
-      alert("Account created! Please login."); 
-      window.location.href="index.html";
-    })
+    .then(()=>{ alert("Account created! Please login."); window.location.href="index.html"; })
     .catch(error=>{
       if(error.code==="auth/email-already-in-use") msg.textContent="Email already registered";
       else if(error.code==="auth/invalid-email") msg.textContent="Invalid email";
