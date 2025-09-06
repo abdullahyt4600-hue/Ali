@@ -35,18 +35,17 @@ button:hover{background:#6a1b9a;}
 
 <script>
 const firebaseConfig = {
-  apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
-  authDomain: "authdomain-b606b.firebaseapp.com",
-  projectId: "authdomain-b606b",
-  storageBucket: "authdomain-b606b.firebasestorage.app",
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
   messagingSenderId: "374508656476",
-  appId: "1:374508656476:web:1a1affe311734602bc5399",
-  measurementId: "G-FH5BSP31E7"
+  appId: "1:374508656476:web:1a1affe311734602bc5399"
 };
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
-const adminEmail = "abdullahyt4622@gmail.com";
+const adminEmail = "abdullahyt4622@gmail.com"; // Your admin email
 
 function login(){
   const email = document.getElementById("email").value.trim();
@@ -62,22 +61,18 @@ function login(){
       else window.location.href="dashboard.html";
     })
     .catch(error=>{
-      msg.textContent = error.message;
+      // Show clear message
       if(error.code==="auth/user-not-found" || error.code==="auth/wrong-password"){
-        forgotPassPrompt(email);
+        msg.textContent="Wrong username or password";
+      } else {
+        msg.textContent = error.message;
       }
     });
 }
 
 function forgotPass(){
   const email = prompt("Enter your email to reset password:");
-  if(email) auth.sendPasswordResetEmail(email)
-    .then(()=>alert("Reset email sent"))
-    .catch(err=>alert(err.message));
-}
-
-function forgotPassPrompt(email){
-  if(confirm("User not found or wrong password. Send reset email?")){
+  if(email){
     auth.sendPasswordResetEmail(email)
       .then(()=>alert("Reset email sent"))
       .catch(err=>alert(err.message));
