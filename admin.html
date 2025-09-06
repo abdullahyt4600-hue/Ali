@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Admin Panel</title>
 <style>
 body{font-family:'Orbitron',sans-serif;background:#121212;color:#fff;padding:20px;}
@@ -31,12 +31,12 @@ tr:hover{background:#333;}
 
 <script>
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
+  authDomain: "authdomain-b606b.firebaseapp.com",
+  projectId: "authdomain-b606b",
+  storageBucket: "authdomain-b606b.firebasestorage.app",
+  messagingSenderId: "374508656476",
+  appId: "1:374508656476:web:1a1affe311734602bc5399"
 };
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
@@ -45,32 +45,28 @@ const db = firebase.firestore();
 const adminEmail = "abdullahyt4622@gmail.com";
 
 auth.onAuthStateChanged(user=>{
-  if(user){
-    if(user.email===adminEmail){
-      loadUsers();
-    } else {
-      alert("Not authorized!");
-      auth.signOut().then(()=>window.location.href="index.html");
-    }
-  }
+  if(!user) window.location.href="index.html";
+  else if(user.email!==adminEmail) window.location.href="dashboard.html";
+  else loadUsers();
 });
 
 function loadUsers(){
-  db.collection("users").orderBy("createdAt","desc").get()
-    .then(snapshot=>{
-      const tbody=document.getElementById("userList");
-      tbody.innerHTML="";
-      snapshot.forEach(doc=>{
-        const data=doc.data();
-        const createdAt=data.createdAt ? data.createdAt.toDate().toLocaleString():"N/A";
-        const tr=document.createElement("tr");
-        tr.innerHTML=`<td>${data.email}</td><td>${createdAt}</td>`;
-        tbody.appendChild(tr);
-      });
+  db.collection("users").orderBy("createdAt","desc").get().then(snapshot=>{
+    const tbody=document.getElementById("userList");
+    tbody.innerHTML="";
+    snapshot.forEach(doc=>{
+      const data = doc.data();
+      const createdAt = data.createdAt? data.createdAt.toDate().toLocaleString() : "N/A";
+      const tr = document.createElement("tr");
+      tr.innerHTML=`<td>${data.email}</td><td>${createdAt}</td>`;
+      tbody.appendChild(tr);
     });
+  });
 }
 
-function logout(){ auth.signOut().then(()=>window.location.href="index.html"); }
+function logout(){
+  auth.signOut().then(()=> window.location.href="index.html");
+}
 </script>
 </body>
 </html>
