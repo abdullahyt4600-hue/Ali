@@ -35,12 +35,13 @@ button:hover{background:#6a1b9a;}
 
 <script>
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
+  authDomain: "authdomain-b606b.firebaseapp.com",
+  projectId: "authdomain-b606b",
+  storageBucket: "authdomain-b606b.firebasestorage.app",
+  messagingSenderId: "374508656476",
+  appId: "1:374508656476:web:1a1affe311734602bc5399",
+  measurementId: "G-FH5BSP31E7"
 };
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
@@ -68,7 +69,6 @@ function login(){
     });
 }
 
-// forgot password
 function forgotPass(){
   const email = prompt("Enter your email to reset password:");
   if(email) auth.sendPasswordResetEmail(email)
@@ -76,7 +76,6 @@ function forgotPass(){
     .catch(err=>alert(err.message));
 }
 
-// optional auto forgot on login error
 function forgotPassPrompt(email){
   if(confirm("User not found or wrong password. Send reset email?")){
     auth.sendPasswordResetEmail(email)
