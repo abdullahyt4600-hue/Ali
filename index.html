@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Login to Your Account</title>
+<title>Login</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
-body{margin:0;font-family:'Orbitron',sans-serif;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);display:flex;align-items:center;justify-content:center;height:100vh;color:#fff;}
+body{margin:0;font-family:'Orbitron',sans-serif;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;}
 .container{background:rgba(0,0,0,0.85);padding:40px;border-radius:15px;width:400px;text-align:center;box-shadow:0 0 25px #7f00ff;}
 h1{color:#a67fff;margin-bottom:20px;}
 input,button{width:100%;padding:12px;margin:8px 0;border:none;border-radius:8px;font-size:16px;}
@@ -21,18 +21,18 @@ button:hover{background:#6a1b9a;}
 </head>
 <body>
 <div class="container">
-<h1>Login</h1>
+<h1>Login to Your Account</h1>
 <div id="msg" class="msg"></div>
 <input id="email" type="email" placeholder="Email"/>
 <input id="password" type="password" placeholder="Password"/>
 <button onclick="login()">Login</button>
-<span class="link" onclick="location.href='signup.html'">Create an account →</span>
-<div id="forgotContainer"></div>
+<span class="link" onclick="location.href='signup.html'">Create Account →</span>
+<span class="link" onclick="forgotPass()">Forgot Password?</span>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
 <script>
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
@@ -42,51 +42,47 @@ const firebaseConfig = {
   messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
   appId: "YOUR_APP_ID"
 };
-if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
 const adminEmail = "abdullahyt4622@gmail.com";
 
 function login(){
-  const email=document.getElementById("email").value.trim();
-  const password=document.getElementById("password").value;
-  const msg=document.getElementById("msg");
-  const forgotContainer=document.getElementById("forgotContainer");
-  msg.textContent="";
-  forgotContainer.innerHTML="";
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const msg = document.getElementById("msg");
+  msg.textContent = "";
 
-  if(!email || !password){ msg.textContent="All fields are required"; return; }
+  if(!email || !password){ msg.textContent="All fields required"; return; }
 
   auth.signInWithEmailAndPassword(email,password)
     .then(userCredential=>{
       if(email === adminEmail) window.location.href="admin.html";
       else window.location.href="dashboard.html";
     })
-    .catch(err=>{
-      if(err.code==="auth/user-not-found" || err.code==="auth/wrong-password"){
-        msg.textContent="Invalid email or password";
-
-        const link=document.createElement("span");
-        link.textContent="Forgot Password?";
-        link.style.color="#b39ddb";
-        link.style.cursor="pointer";
-        link.style.display="block";
-        link.style.marginTop="10px";
-        link.onclick=()=>forgotPassword(email);
-        link.onmouseover=()=>link.style.color="#fff";
-        link.onmouseout=()=>link.style.color="#b39ddb";
-        forgotContainer.appendChild(link);
-
-      } else msg.textContent="Something went wrong";
+    .catch(error=>{
+      msg.textContent = error.message;
+      if(error.code==="auth/user-not-found" || error.code==="auth/wrong-password"){
+        forgotPassPrompt(email);
+      }
     });
 }
 
-function forgotPassword(email=""){
-  if(!email) email=prompt("Enter your email to reset password:");
-  if(!email) return;
-  auth.sendPasswordResetEmail(email)
-    .then(()=>alert("Password reset email sent!"))
-    .catch(err=>alert("Error: "+err.message));
+// forgot password
+function forgotPass(){
+  const email = prompt("Enter your email to reset password:");
+  if(email) auth.sendPasswordResetEmail(email)
+    .then(()=>alert("Reset email sent"))
+    .catch(err=>alert(err.message));
+}
+
+// optional auto forgot on login error
+function forgotPassPrompt(email){
+  if(confirm("User not found or wrong password. Send reset email?")){
+    auth.sendPasswordResetEmail(email)
+      .then(()=>alert("Reset email sent"))
+      .catch(err=>alert(err.message));
+  }
 }
 </script>
 </body>
