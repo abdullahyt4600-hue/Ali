@@ -2,62 +2,83 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Admin Panel - Ali Hacking Course</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
-    body{margin:0;font-family:'Orbitron',sans-serif;background:linear-gradient(135deg,#000428,#004e92);color:#fff;}
-    header{padding:20px;background:rgba(0,0,0,0.6);display:flex;justify-content:space-between;}
-    .logo{font-weight:bold;color:#9f6fff;font-size:20px;}
-    main{padding:30px;}
+    body{font-family:Arial, sans-serif;background:#121212;color:#fff;padding:20px;}
+    h1{color:#ce93d8;}
     table{width:100%;border-collapse:collapse;margin-top:20px;}
-    th,td{border:1px solid #555;padding:10px;text-align:center;}
-    th{background:#2c2c4d;}
-    button{padding:6px 10px;margin:2px;border:none;border-radius:6px;cursor:pointer;font-weight:bold;}
-    .ban{background:#e53935;color:#fff;} .unban{background:#43a047;color:#fff;} .kick{background:#fb8c00;color:#fff;}
-    .reset{background:#1e88e5;color:#fff;} .del{background:#8e24aa;color:#fff;}
+    th,td{padding:12px;border-bottom:1px solid #444;text-align:left;}
+    th{background:#8e24aa;}
+    tr:hover{background:#333;}
+    .logout{margin-top:20px;padding:10px 20px;background:#8e24aa;border:none;color:#fff;cursor:pointer;}
+    .logout:hover{background:#6a1b9a;}
   </style>
 </head>
 <body>
-  <header>
-    <div class="logo">🛡️ Admin Panel</div>
-    <button onclick="logout()">Logout</button>
-  </header>
-  <main>
-    <h2>Manage Users</h2>
-    <table>
-      <thead><tr><th>Username</th><th>Status</th><th>Last Login</th><th>Actions</th></tr></thead>
-      <tbody id="usertable"></tbody>
-    </table>
-  </main>
+  <h1>Admin Dashboard</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Created At</th>
+      </tr>
+    </thead>
+    <tbody id="userList"></tbody>
+  </table>
+  <button class="logout" onclick="logout()">Logout</button>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
   <script>
-    if(localStorage.getItem('currentUser')!=='root'){location.href='index.html';}
-    function getUsers(){return JSON.parse(localStorage.getItem('users')||'[]');}
-    function saveUsers(u){localStorage.setItem('users',JSON.stringify(u));}
-    function render(){
-      let tb=document.getElementById('usertable'); tb.innerHTML="";
-      let users=getUsers();
-      users.forEach((u,i)=>{
-        let tr=document.createElement('tr');
-        tr.innerHTML=`<td>${u.username}</td>
-          <td>${u.online?"Online":"Offline"} ${u.isBanned?"(Banned)":""}</td>
-          <td>${u.lastLogin||"-"}</td>
-          <td>
-            ${u.isBanned?`<button class='unban' onclick='unban(${i})'>Unban</button>`:`<button class='ban' onclick='ban(${i})'>Ban</button>`}
-            <button class='kick' onclick='kick(${i})'>Kick</button>
-            <button class='reset' onclick='reset(${i})'>Reset PW</button>
-            <button class='del' onclick='del(${i})'>Delete</button>
-          </td>`;
-        tb.appendChild(tr);
+    const firebaseConfig = {
+      apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
+      authDomain: "authdomain-b606b.firebaseapp.com",
+      projectId: "authdomain-b606b",
+      storageBucket: "authdomain-b606b.firebasestorage.app",
+      messagingSenderId: "374508656476",
+      appId: "1:374508656476:web:1a1affe311734602bc5399",
+      measurementId: "G-FH5BSP31E7"
+    };
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // check if logged in
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = "index.html";
+      } else {
+        loadUsers();
+      }
+    });
+
+    // load all users from Firestore
+    function loadUsers() {
+      db.collection("users").get().then(snapshot => {
+        const tbody = document.getElementById("userList");
+        tbody.innerHTML = "";
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td>${data.email}</td><td>${data.createdAt.toDate()}</td>`;
+          tbody.appendChild(tr);
+        });
       });
     }
-    function ban(i){let u=getUsers();u[i].isBanned=true;saveUsers(u);render();}
-    function unban(i){let u=getUsers();u[i].isBanned=false;saveUsers(u);render();}
-    function kick(i){alert("Kicked "+getUsers()[i].username);}
-    function reset(i){let np=prompt("New password:");if(!np)return;let u=getUsers();u[i].password=np;saveUsers(u);alert("Password reset");}
-    function del(i){if(!confirm("Delete user?"))return;let u=getUsers();u.splice(i,1);saveUsers(u);render();}
-    function logout(){localStorage.removeItem('currentUser');location.href='index.html';}
-    render();
+
+    // logout
+    function logout() {
+      auth.signOut().then(() => {
+        window.location.href = "index.html";
+      });
+    }
   </script>
 </body>
 </html>
