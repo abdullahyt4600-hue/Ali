@@ -2,24 +2,25 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Admin Panel</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
-body{margin:0;font-family:'Orbitron',sans-serif;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);color:#fff;padding:20px;}
-h1{color:#a67fff;text-align:center;margin-bottom:20px;}
-table {width:100%;border-collapse:collapse;background:rgba(0,0,0,0.85);border-radius:10px;overflow:hidden;margin-top:20px;}
-th,td {padding:12px;border-bottom:1px solid #444;text-align:left;}
-th {background:#8e24aa;}
-tr:hover {background:#3a3a5c;}
-.logout {margin-top:20px;padding:12px 20px;background:#8e24aa;border:none;color:#fff;font-weight:bold;cursor:pointer;border-radius:8px;display:block;margin:auto;}
-.logout:hover {background:#6a1b9a;}
+body{font-family:'Orbitron',sans-serif;background:#121212;color:#fff;padding:20px;}
+h1{color:#ce93d8;}
+table{width:100%;border-collapse:collapse;margin-top:20px;}
+th,td{padding:12px;border-bottom:1px solid #444;text-align:left;}
+th{background:#8e24aa;}
+tr:hover{background:#333;}
+.logout{margin-top:20px;padding:10px 20px;background:#8e24aa;border:none;color:#fff;cursor:pointer;}
+.logout:hover{background:#6a1b9a;}
 </style>
 </head>
 <body>
-<h1>Admin Panel</h1>
+<h1>Admin Dashboard</h1>
 <table>
-<thead><tr><th>Email</th><th>Created At</th></tr></thead>
+<thead>
+<tr><th>Email</th><th>Created At</th></tr>
+</thead>
 <tbody id="userList"></tbody>
 </table>
 <button class="logout" onclick="logout()">Logout</button>
@@ -27,6 +28,7 @@ tr:hover {background:#3a3a5c;}
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
 <script>
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
@@ -36,16 +38,21 @@ const firebaseConfig = {
   messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
   appId: "YOUR_APP_ID"
 };
-if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
-const auth=firebase.auth();
-const db=firebase.firestore();
-const adminEmail="abdullahyt4622@gmail.com";
+const auth = firebase.auth();
+const db = firebase.firestore();
+const adminEmail = "abdullahyt4622@gmail.com";
 
 auth.onAuthStateChanged(user=>{
-  if(!user) window.location.href="index.html";
-  else if(user.email !== adminEmail){ alert("Not authorized!"); auth.signOut().then(()=>window.location.href="index.html"); }
-  else loadUsers();
+  if(user){
+    if(user.email===adminEmail){
+      loadUsers();
+    } else {
+      alert("Not authorized!");
+      auth.signOut().then(()=>window.location.href="index.html");
+    }
+  }
 });
 
 function loadUsers(){
@@ -60,7 +67,7 @@ function loadUsers(){
         tr.innerHTML=`<td>${data.email}</td><td>${createdAt}</td>`;
         tbody.appendChild(tr);
       });
-    }).catch(err=>console.error(err));
+    });
 }
 
 function logout(){ auth.signOut().then(()=>window.location.href="index.html"); }
