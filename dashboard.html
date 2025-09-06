@@ -1,96 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>User Dashboard - Ali Hacking Course</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
-    body{margin:0;font-family:'Orbitron',sans-serif;background:linear-gradient(135deg,#141e30,#243b55);color:#fff;min-height:100vh;}
-    header{display:flex;justify-content:space-between;align-items:center;padding:20px;background:rgba(0,0,0,0.6);}
-    .logo{font-weight:bold;color:#9f6fff;font-size:20px;}
-    .dropdown{position:relative;display:inline-block;}
-    .dropbtn{background:#8e24aa;color:#fff;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;}
-    .dropdown-content{display:none;position:absolute;right:0;background:#2c2c4d;min-width:160px;border-radius:8px;}
-    .dropdown-content a{color:#fff;padding:10px;display:block;text-decoration:none;}
-    .dropdown-content a:hover{background:#444;}
-    .dropdown:hover .dropdown-content{display:block;}
-    main{padding:40px;text-align:center;}
-    .tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;}
-    .tool{background:rgba(0,0,0,0.7);padding:20px;border-radius:10px;box-shadow:0 0 15px #7f00ff;}
-    .tool h3{color:#ce93d8;}
-    .paid{margin-top:30px;padding:15px;background:#9c27b0;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer;}
-    .paid:hover{background:#7b1fa2;}
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>User Dashboard</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+body{margin:0;font-family:'Orbitron',sans-serif;background:linear-gradient(135deg,#141e30,#243b55);color:#fff;min-height:100vh;}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px;background:rgba(0,0,0,0.6);}
+.logo{font-weight:bold;color:#9f6fff;font-size:20px;}
+.dropdown{position:relative;display:inline-block;}
+.dropbtn{background:#8e24aa;color:#fff;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;}
+.dropdown-content{display:none;position:absolute;right:0;background:#2c2c4d;min-width:160px;border-radius:8px;}
+.dropdown-content a{color:#fff;padding:10px;display:block;text-decoration:none;}
+.dropdown-content a:hover{background:#444;}
+.dropdown:hover .dropdown-content{display:block;}
+main{padding:40px;text-align:center;}
+.tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;}
+.tool{background:rgba(0,0,0,0.7);padding:20px;border-radius:10px;box-shadow:0 0 15px #7f00ff;}
+.tool h3{color:#ce93d8;}
+.paid{margin-top:30px;padding:15px;background:#9c27b0;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer;}
+.paid:hover{background:#7b1fa2;}
+</style>
 </head>
 <body>
-  <header>
-    <div class="logo">👨‍💻 Ali Hacking Course</div>
-    <div class="dropdown">
-      <button class="dropbtn">Account ▾</button>
-      <div class="dropdown-content">
-        <a href="#" onclick="changePass()">Change Password</a>
-        <a href="#" onclick="logout()">Logout</a>
-      </div>
+<header>
+  <div class="logo">👨‍💻 Your Dashboard</div>
+  <div class="dropdown">
+    <button class="dropbtn">Account ▾</button>
+    <div class="dropdown-content">
+      <a href="#" onclick="changePass()">Change Password</a>
+      <a href="#" onclick="logout()">Logout</a>
     </div>
-  </header>
-  <main>
-    <h2 id="welcome"></h2>
-    <div class="tools">
-      <div class="tool"><h3>WiFi Hacking</h3><p>Simulated WiFi crack tool.</p></div>
-      <div class="tool"><h3>IP Camera Spy</h3><p>Simulated camera viewer.</p></div>
-      <div class="tool"><h3>IP Trace</h3><p>Track IP locations.</p></div>
-      <div class="tool"><h3>Mobile Hacking</h3><p>Simulated mobile exploits.</p></div>
-    </div>
-    <button class="paid">$1000 - Unlock Paid Course</button>
-  </main>
+  </div>
+</header>
+<main>
+  <h2 id="welcome"></h2>
+  <div class="tools">
+    <div class="tool"><h3>WiFi Tool</h3><p>Simulated WiFi cracking tool.</p></div>
+    <div class="tool"><h3>IP Camera Viewer</h3><p>Simulated camera viewer.</p></div>
+    <div class="tool"><h3>IP Tracker</h3><p>Track IP locations.</p></div>
+    <div class="tool"><h3>Mobile Tools</h3><p>Simulated mobile exploits.</p></div>
+  </div>
+  <button class="paid">$1000 - Unlock Paid Course</button>
+</main>
 
-  <!-- Firebase v8 SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<!-- Firebase v8 SDKs -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
-      authDomain: "authdomain-b606b.firebaseapp.com",
-      projectId: "authdomain-b606b",
-      storageBucket: "authdomain-b606b.firebasestorage.app",
-      messagingSenderId: "374508656476",
-      appId: "1:374508656476:web:1a1affe311734602bc5399",
-      measurementId: "G-FH5BSP31E7"
-    };
+<script>
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_AUTH_DOMAIN",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_STORAGE_BUCKET",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+const auth = firebase.auth();
 
-    // check login state
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        document.getElementById('welcome').textContent =
-          "Welcome to Ali Hacking Course, " + user.email;
-      } else {
-        window.location.href = "index.html";
-      }
-    });
+// check login state
+auth.onAuthStateChanged(user => {
+  if (user) {
+    document.getElementById('welcome').textContent =
+      "Welcome, " + user.email;
+  } else {
+    window.location.href = "index.html";
+  }
+});
 
-    // logout
-    function logout() {
-      auth.signOut().then(() => {
-        window.location.href = "index.html";
-      });
-    }
+// logout
+function logout() {
+  auth.signOut().then(() => {
+    window.location.href = "index.html";
+  });
+}
 
-    // change password
-    function changePass() {
-      const np = prompt("Enter new password:");
-      if (!np) return;
-      const user = auth.currentUser;
-      if (user) {
-        user.updatePassword(np)
-          .then(() => alert("Password updated"))
-          .catch(err => alert("Error: " + err.message));
-      }
-    }
-  </script>
+// change password
+function changePass() {
+  const np = prompt("Enter new password:");
+  if (!np) return;
+  const user = auth.currentUser;
+  if (user) {
+    user.updatePassword(np)
+      .then(() => alert("Password updated"))
+      .catch(err => alert("Error: " + err.message));
+  }
+}
+</script>
 </body>
 </html>
