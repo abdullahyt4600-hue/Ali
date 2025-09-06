@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Admin Panel - Ali Hacking Course</title>
   <style>
-    body{font-family:Arial, sans-serif;background:#121212;color:#fff;padding:20px;}
+    body{font-family:'Orbitron',sans-serif;background:#121212;color:#fff;padding:20px;}
     h1{color:#ce93d8;}
     table{width:100%;border-collapse:collapse;margin-top:20px;}
     th,td{padding:12px;border-bottom:1px solid #444;text-align:left;}
@@ -50,7 +50,7 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // check if logged in
+    // auth state check
     auth.onAuthStateChanged(user => {
       if (!user) {
         window.location.href = "index.html";
@@ -59,21 +59,22 @@
       }
     });
 
-    // load all users from Firestore
+    // Firestore se sab users load karna
     function loadUsers() {
-      db.collection("users").get().then(snapshot => {
+      db.collection("users").orderBy("createdAt", "desc").get().then(snapshot => {
         const tbody = document.getElementById("userList");
         tbody.innerHTML = "";
         snapshot.forEach(doc => {
           const data = doc.data();
+          const createdAt = data.createdAt ? data.createdAt.toDate().toLocaleString() : "N/A";
           const tr = document.createElement("tr");
-          tr.innerHTML = `<td>${data.email}</td><td>${data.createdAt.toDate()}</td>`;
+          tr.innerHTML = `<td>${data.email}</td><td>${createdAt}</td>`;
           tbody.appendChild(tr);
         });
       });
     }
 
-    // logout
+    // logout function
     function logout() {
       auth.signOut().then(() => {
         window.location.href = "index.html";
