@@ -44,17 +44,52 @@
     </div>
     <button class="paid">$1000 - Unlock Paid Course</button>
   </main>
+
+  <!-- Firebase v8 SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
   <script>
-    let user=localStorage.getItem('currentUser');
-    if(!user||user==='root'){location.href='index.html';}
-    document.getElementById('welcome').textContent="Welcome to Ali Hacking Course, "+user;
-    function logout(){localStorage.removeItem('currentUser');location.href='index.html';}
-    function changePass(){
-      let np=prompt("Enter new password:");
-      if(!np)return;
-      let users=JSON.parse(localStorage.getItem('users')||'[]');
-      let idx=users.findIndex(x=>x.username===user);
-      if(idx!==-1){users[idx].password=np;localStorage.setItem('users',JSON.stringify(users));alert("Password updated");}
+    const firebaseConfig = {
+      apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
+      authDomain: "authdomain-b606b.firebaseapp.com",
+      projectId: "authdomain-b606b",
+      storageBucket: "authdomain-b606b.firebasestorage.app",
+      messagingSenderId: "374508656476",
+      appId: "1:374508656476:web:1a1affe311734602bc5399",
+      measurementId: "G-FH5BSP31E7"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // check login state
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        document.getElementById('welcome').textContent =
+          "Welcome to Ali Hacking Course, " + user.email;
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+
+    // logout
+    function logout() {
+      auth.signOut().then(() => {
+        window.location.href = "index.html";
+      });
+    }
+
+    // change password
+    function changePass() {
+      const np = prompt("Enter new password:");
+      if (!np) return;
+      const user = auth.currentUser;
+      if (user) {
+        user.updatePassword(np)
+          .then(() => alert("Password updated"))
+          .catch(err => alert("Error: " + err.message));
+      }
     }
   </script>
 </body>
