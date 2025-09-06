@@ -25,7 +25,7 @@ main{padding:40px;text-align:center;}
 </head>
 <body>
 <header>
-<div class="logo">👨‍💻 Your Dashboard</div>
+<div class="logo">User Dashboard</div>
 <div class="dropdown">
 <button class="dropbtn">Account ▾</button>
 <div class="dropdown-content">
@@ -51,46 +51,6 @@ main{padding:40px;text-align:center;}
 
 <script>
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
-if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-auth.onAuthStateChanged(user=>{
-  if(user){
-    // load only this user's data
-    db.collection("users").doc(user.uid).get()
-      .then(doc=>{
-        if(doc.exists){
-          document.getElementById('welcome').textContent = "Welcome, " + doc.data().email;
-        }
-      });
-  } else {
-    window.location.href="index.html";
-  }
-});
-
-function logout(){
-  auth.signOut().then(()=>window.location.href="index.html");
-}
-
-function changePass(){
-  const np = prompt("Enter new password:");
-  if(!np) return;
-  const user = auth.currentUser;
-  if(user){
-    user.updatePassword(np)
-      .then(()=>alert("Password updated"))
-      .catch(err=>alert("Error: " + err.message));
-  }
-}
-</script>
-</body>
-</html>
+  apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
+  authDomain: "authdomain-b606b.firebaseapp.com",
+  projectId: "authdomain-b606
