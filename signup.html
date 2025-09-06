@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign Up - Ali Hacking Course</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
+    body {
+      margin:0; font-family:'Orbitron',sans-serif;
+      background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+      color:#fff; display:flex; align-items:center; justify-content:center; height:100vh;
+    }
+    .container {
+      background:rgba(0,0,0,0.85); padding:40px; border-radius:15px;
+      width:400px; text-align:center; box-shadow:0 0 25px #7f00ff;
+    }
+    h1{ color:#a67fff; margin-bottom:20px; }
+    input,button{ width:100%; padding:12px; margin:8px 0; border:none; border-radius:8px; font-size:16px; }
+    input{ background:#2c2c4d; color:#fff; }
+    input:focus{ background:#3a3a5c; outline:none; }
+    button{ background:#8e24aa; color:#fff; font-weight:bold; cursor:pointer; }
+    button:hover{ background:#6a1b9a; }
+    .msg{ height:20px; color:#ff6666; font-weight:bold; }
+    .link{ margin-top:10px; display:block; cursor:pointer; color:#b39ddb; }
+    .link:hover{ color:#fff; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Create Account</h1>
+    <div id="msg" class="msg"></div>
+    <input id="username" type="email" placeholder="Email"/>
+    <input id="password" type="password" placeholder="Password"/>
+    <input id="confirm" type="password" placeholder="Confirm Password"/>
+    <button onclick="signup()">Sign Up</button>
+    <span class="link" onclick="location.href='index.html'">← Back to Login</span>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
+      authDomain: "authdomain-b606b.firebaseapp.com",
+      projectId: "authdomain-b606b",
+      storageBucket: "authdomain-b606b.firebasestorage.app",
+      messagingSenderId: "374508656476",
+      appId: "1:374508656476:web:1a1affe311734602bc5399",
+      measurementId: "G-FH5BSP31E7"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    function signup() {
+      const email = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const confirm = document.getElementById("confirm").value;
+      const msg = document.getElementById("msg");
+
+      if (!email || !password || !confirm) {
+        msg.textContent = "All fields required";
+        return;
+      }
+      if (password !== confirm) {
+        msg.textContent = "Passwords don’t match";
+        return;
+      }
+
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(() => {
+          alert("Account created!");
+          location.href = "index.html";
+        })
+        .catch(error => {
+          msg.textContent = error.message;
+        });
+    }
+  </script>
+</body>
+</html>
