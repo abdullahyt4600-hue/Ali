@@ -35,17 +35,17 @@ button:hover{background:#6a1b9a;}
 
 <script>
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
+  authDomain: "authdomain-b606b.firebaseapp.com",
+  projectId: "authdomain-b606b",
+  storageBucket: "authdomain-b606b.firebasestorage.app",
   messagingSenderId: "374508656476",
   appId: "1:374508656476:web:1a1affe311734602bc5399"
 };
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
-const adminEmail = "abdullahyt4622@gmail.com"; // Your admin email
+const adminEmail = "abdullahyt4622@gmail.com"; // Admin email
 
 function login(){
   const email = document.getElementById("email").value.trim();
@@ -61,7 +61,6 @@ function login(){
       else window.location.href="dashboard.html";
     })
     .catch(error=>{
-      // Show clear message
       if(error.code==="auth/user-not-found" || error.code==="auth/wrong-password"){
         msg.textContent="Wrong username or password";
       } else {
