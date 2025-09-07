@@ -3,38 +3,58 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Dashboard - HackLearn</title>
+<title>HackLearn Dashboard</title>
 <style>
-body{margin:0;font-family:'Orbitron',sans-serif;background:#121212;color:#fff;}
-header{display:flex;justify-content:space-between;align-items:center;padding:20px 50px;background:#1c1c1c;}
+body{margin:0;font-family:'Orbitron',sans-serif;background:#121212;color:#fff;display:flex;flex-direction:row;}
+/* Sidebar */
+.sidebar{width:250px;background:#1c1c1c;height:100vh;display:flex;flex-direction:column;padding:20px;position:fixed;}
+.sidebar h2{color:#ce93d8;text-align:center;margin-bottom:20px;}
+.sidebar a{color:#fff;text-decoration:none;padding:10px;border-radius:5px;margin-bottom:5px;display:block;transition:0.3s;}
+.sidebar a:hover{background:#333;color:#ce93d8;}
+/* Main content */
+.main{margin-left:250px;padding:20px;flex:1;}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
 header h1{color:#ce93d8;}
 header button{padding:10px 20px;border:none;border-radius:5px;background:#8e24aa;color:#fff;cursor:pointer;}
 header button:hover{background:#6a1b9a;}
-.main{padding:20px;}
-h2{margin-bottom:20px;color:#ce93d8;}
+/* Profile */
+.profile{background:#1e1e1e;padding:20px;border-radius:10px;margin-bottom:20px;}
+.profile h3{margin:0 0 10px 0;}
+.profile p{margin:5px 0;}
+/* Cards */
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;}
-.card{background:#1e1e1e;padding:20px;border-radius:10px;transition:0.3s;}
+.card{background:#1e1e1e;padding:20px;border-radius:10px;transition:0.3s;position:relative;overflow:hidden;}
 .card:hover{background:#333;}
-.card h3{margin-top:0;}
-.progress{background:#333;width:100%;height:10px;border-radius:5px;margin-top:10px;}
-.progress-inner{background:#8e24aa;height:10px;border-radius:5px;width:50%;}
-.profile{margin-bottom:20px;padding:15px;background:#1e1e1e;border-radius:10px;}
+.card h3{margin-top:0;color:#ce93d8;}
+.card p{margin:5px 0;}
+.progress{background:#333;width:100%;height:10px;border-radius:5px;margin-top:10px;overflow:hidden;}
+.progress-inner{background:#8e24aa;height:10px;width:0%;border-radius:5px;transition:width 1s;}
+.badge{position:absolute;top:10px;right:10px;background:#8e24aa;padding:5px 10px;border-radius:5px;font-size:0.8rem;color:#fff;}
 </style>
 </head>
 <body>
-<header>
-  <h1>HackLearn Dashboard</h1>
-  <button onclick="logout()">Logout</button>
-</header>
+
+<div class="sidebar">
+  <h2>HackLearn</h2>
+  <a href="#">Dashboard</a>
+  <a href="#">Rooms</a>
+  <a href="#">Profile</a>
+  <a href="#" onclick="logout()">Logout</a>
+</div>
 
 <div class="main">
-  <div class="profile">
-    <p>Email: <span id="userEmail"></span></p>
-    <p>Points: <span id="userPoints">0</span></p>
-  </div>
+<header>
+  <h1>Dashboard</h1>
+</header>
 
-  <h2>Rooms</h2>
-  <div class="cards" id="roomCards"></div>
+<div class="profile">
+  <h3 id="userEmail">Email</h3>
+  <p>Points: <span id="userPoints">0</span></p>
+  <p>Badges: <span id="userBadges">0</span></p>
+</div>
+
+<h2>Rooms</h2>
+<div class="cards" id="roomCards"></div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -60,16 +80,19 @@ auth.onAuthStateChanged(user=>{
 
 function loadUser(user){
   document.getElementById("userEmail").textContent = user.email;
+
   db.collection("users").doc(user.uid).get().then(doc=>{
     if(doc.exists){
       document.getElementById("userPoints").textContent = doc.data().points || 0;
+      document.getElementById("userBadges").textContent = doc.data().badges || 0;
     }
   });
 
+  // Example rooms
   const rooms = [
-    {title:"Intro to Hacking",description:"Learn basics of ethical hacking.",points:10,progress:50},
-    {title:"Web Exploitation",description:"Practice web vulnerabilities.",points:20,progress:30},
-    {title:"Crypto Challenges",description:"Learn cryptography basics.",points:15,progress:70}
+    {title:"Intro to Hacking",description:"Learn basics of ethical hacking.",points:10,progress:50,badge:"New"},
+    {title:"Web Exploitation",description:"Practice web vulnerabilities.",points:20,progress:30,badge:"Hot"},
+    {title:"Crypto Challenges",description:"Learn cryptography basics.",points:15,progress:70,badge:"Pro"}
   ];
 
   const container = document.getElementById('roomCards');
@@ -79,7 +102,8 @@ function loadUser(user){
     div.innerHTML = `<h3>${room.title}</h3>
                      <p>${room.description}</p>
                      <p>Points: ${room.points}</p>
-                     <div class="progress"><div class="progress-inner" style="width:${room.progress}%;"></div></div>`;
+                     <div class="progress"><div class="progress-inner" style="width:${room.progress}%"></div></div>
+                     <div class="badge">${room.badge}</div>`;
     container.appendChild(div);
   });
 }
