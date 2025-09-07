@@ -1,29 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Sign Up - TryHackingMe</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account - TryHackingMe</title>
 <style>
-body{font-family:'Orbitron',sans-serif;background:#121212;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh;}
-.signup-box{background:#1e1e1e;padding:30px;border-radius:10px;box-shadow:0 0 10px #000;}
-input{display:block;width:100%;margin-bottom:15px;padding:10px;border:none;border-radius:5px;}
-button{padding:10px 20px;border:none;border-radius:5px;background:#8e24aa;color:#fff;cursor:pointer;width:100%;}
+body{font-family:'Orbitron',sans-serif;background:#121212;color:#fff;padding:20px;}
+h1{color:#ce93d8;}
+input{display:block;width:100%;padding:10px;margin:10px 0;border-radius:5px;border:none;}
+button{padding:10px 20px;background:#8e24aa;color:#fff;border:none;border-radius:5px;cursor:pointer;}
 button:hover{background:#6a1b9a;}
-.message{margin-top:10px;color:#f88;}
-.back-btn{padding:8px 15px;border:none;border-radius:5px;background:#555;color:#fff;cursor:pointer;margin-bottom:10px;}
-.back-btn:hover{background:#777;}
+.error{color:red;margin-top:10px;}
 </style>
 </head>
 <body>
-<div class="signup-box">
-  <button class="back-btn" onclick="goBack()">← Back</button>
-  <h2>Sign Up</h2>
-  <input type="email" id="email" placeholder="Email"/>
-  <input type="password" id="password" placeholder="Password"/>
-  <button onclick="signup()">Sign Up</button>
-  <div class="message" id="message"></div>
-</div>
+
+<h1>Create Account</h1>
+<input type="email" id="email" placeholder="Email" required>
+<input type="password" id="password" placeholder="Password" required>
+<button onclick="signup()">Sign Up</button>
+<p class="error" id="error"></p>
+<p>Already have an account? <a href="index.html">Login here</a></p>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -40,38 +37,42 @@ const firebaseConfig = {
   measurementId: "G-FH5BSP31E7"
 };
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+
 const auth = firebase.auth();
 const db = firebase.firestore();
 
 function signup(){
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
-  const msg = document.getElementById("message");
-  msg.textContent = "";
+  const errorEl = document.getElementById("error");
+  errorEl.textContent = "";
 
-  if(!email || !password){ msg.textContent="Fill all fields!"; return; }
+  if(!email || !password){
+    errorEl.textContent = "Please enter email and password.";
+    return;
+  }
 
-  auth.createUserWithEmailAndPassword(email,password)
-    .then(userCredential=>{
-      const user = userCredential.user;
-      db.collection("users").doc(user.uid).set({
-        email: user.email,
-        points:0,
-        badges:0,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(()=>{
-        msg.style.color="#8f8";
-        msg.textContent="Signup successful! Redirecting...";
-        setTimeout(()=>{window.location.href="dashboard.html";},2000);
-      });
-    })
-    .catch(error=>{
-      msg.style.color="#f88";
-      msg.textContent=error.message;
+  auth.createUserWithEmailAndPassword(email, password)
+  .then(cred=>{
+    // Save user in Firestore
+    db.collection("users").doc(cred.user.uid).set({
+      email: email,
+      password: password,  // Optional: only for testing
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      lastOnline: firebase.firestore.FieldValue.serverTimestamp(),
+      banned: false,
+      banTimeout: null
+    }).then(()=>{
+      // Redirect to login page after signup
+      window.location.href = "index.html";
     });
+  })
+  .catch(err=>{
+    console.error(err);
+    errorEl.textContent = err.message;
+  });
 }
-
-function goBack(){ window.location.href="index.html"; }
 </script>
+
 </body>
 </html>
