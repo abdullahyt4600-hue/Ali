@@ -19,7 +19,7 @@ tr:hover{background:#333;}
 <h1>Admin Dashboard</h1>
 <table>
   <thead>
-    <tr><th>Email</th><th>Created At</th></tr>
+    <tr><th>Email</th><th>Points</th><th>Created At</th></tr>
   </thead>
   <tbody id="userList"></tbody>
 </table>
@@ -31,12 +31,12 @@ tr:hover{background:#333;}
 
 <script>
 const firebaseConfig = {
-  apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
-  authDomain: "authdomain-b606b.firebaseapp.com",
-  projectId: "authdomain-b606b",
-  storageBucket: "authdomain-b606b.appspot.com",
-  messagingSenderId: "374508656476",
-  appId: "1:374508656476:web:1a1affe311734602bc5399"
+  apiKey: "YOUR_FIREBASE_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
@@ -57,8 +57,9 @@ function loadUsers(){
     snapshot.forEach(doc=>{
       const data = doc.data();
       const createdAt = data.createdAt ? data.createdAt.toDate().toLocaleString() : "N/A";
+      const points = data.points || 0;
       const tr = document.createElement("tr");
-      tr.innerHTML=`<td>${data.email}</td><td>${createdAt}</td>`;
+      tr.innerHTML=`<td>${data.email}</td><td>${points}</td><td>${createdAt}</td>`;
       tbody.appendChild(tr);
     });
   });
