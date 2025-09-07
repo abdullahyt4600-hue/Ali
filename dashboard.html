@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>HackLearn Dashboard</title>
+<title>TryHackingMe Dashboard</title>
 <style>
 *{box-sizing:border-box;}
 body{margin:0;font-family:'Orbitron',sans-serif;background:#121212;color:#fff;display:flex;min-height:100vh;}
@@ -16,9 +16,6 @@ header{display:flex;justify-content:space-between;align-items:center;margin-bott
 header h1{color:#ce93d8;}
 header button{padding:8px 15px;border:none;border-radius:5px;background:#8e24aa;color:#fff;cursor:pointer;}
 header button:hover{background:#6a1b9a;}
-#profileModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);justify-content:center;align-items:center;z-index:100;}
-#profileModal .modal-content{background:#1e1e1e;padding:20px;border-radius:10px;width:300px;text-align:center;}
-#profileModal .close{color:#fff;float:right;font-size:20px;cursor:pointer;}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;}
 .card{background:#1e1e1e;padding:20px;border-radius:10px;position:relative;transition:0.3s;}
 .card:hover{background:#333;}
@@ -27,22 +24,25 @@ header button:hover{background:#6a1b9a;}
 .progress{background:#333;width:100%;height:10px;border-radius:5px;margin-top:10px;overflow:hidden;}
 .progress-inner{background:#8e24aa;height:10px;width:0%;border-radius:5px;transition:width 1s;}
 .badge{position:absolute;top:10px;right:10px;background:#8e24aa;padding:5px 10px;border-radius:5px;font-size:0.8rem;color:#fff;}
-.back-btn{padding:8px 15px;border:none;border-radius:5px;background:#555;color:#fff;cursor:pointer;margin-bottom:10px;}
-.back-btn:hover{background:#777;}
+#profileModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);justify-content:center;align-items:center;z-index:100;}
+#profileModal .modal-content{background:#1e1e1e;padding:20px;border-radius:10px;width:300px;text-align:center;}
+#profileModal .modal-content input{width:90%;padding:8px;margin:5px 0;border-radius:5px;border:none;}
+#profileModal .close{color:#fff;float:right;font-size:20px;cursor:pointer;}
+.button-change{padding:8px 15px;border:none;border-radius:5px;background:#8e24aa;color:#fff;cursor:pointer;margin-top:10px;width:95%;}
+.button-change:hover{background:#6a1b9a;}
 </style>
 </head>
 <body>
 
 <div class="sidebar">
-  <h2>HackLearn</h2>
+  <h2>TryHackingMe</h2>
   <a href="#" onclick="openProfile()">Profile</a>
-  <a href="#">Dashboard</a>
   <a href="#">Rooms</a>
+  <a href="#">Operations</a>
   <a href="#" onclick="logout()">Logout</a>
 </div>
 
 <div class="main">
-<button class="back-btn" onclick="goBack()">← Back</button>
 <header>
   <h1>Dashboard</h1>
   <button onclick="logout()">Logout</button>
@@ -56,8 +56,12 @@ header button:hover{background:#6a1b9a;}
 
 <h2>Rooms</h2>
 <div class="cards" id="roomCards"></div>
+
+<h2>Operations / Labs</h2>
+<div class="cards" id="operationCards"></div>
 </div>
 
+<!-- Profile Modal -->
 <div id="profileModal">
   <div class="modal-content">
     <span class="close" onclick="closeProfile()">&times;</span>
@@ -65,6 +69,12 @@ header button:hover{background:#6a1b9a;}
     <p id="profileEmail"></p>
     <p id="profilePoints"></p>
     <p id="profileBadges"></p>
+    <h4>Change Password</h4>
+    <input type="password" id="currentPassword" placeholder="Current Password"/>
+    <input type="password" id="newPassword" placeholder="New Password"/>
+    <input type="password" id="confirmPassword" placeholder="Confirm New Password"/>
+    <button class="button-change" onclick="changePassword()">Change Password</button>
+    <p id="passMsg"></p>
   </div>
 </div>
 
@@ -122,12 +132,52 @@ function loadUser(user){
                    <div class="badge">${room.badge}</div>`;
     container.appendChild(div);
   });
+
+  // Operations/Labs
+  const operations = [
+    {title:"Intro to Linux", description:"Learn basic Linux commands.", points:10, progress:40, badge:"New"},
+    {title:"Web Exploitation 101", description:"Find and exploit web vulnerabilities.", points:20, progress:25, badge:"Hot"},
+    {title:"Crypto Basics", description:"Learn cryptography basics and challenges.", points:15, progress:70, badge:"Pro"},
+    {title:"Forensics Lab", description:"Investigate digital evidence.", points:30, progress:10, badge:"New"}
+  ];
+  const opContainer = document.getElementById('operationCards');
+  operations.forEach(op=>{
+    const div=document.createElement('div');
+    div.className='card';
+    div.innerHTML=`<h3>${op.title}</h3>
+                   <p>${op.description}</p>
+                   <p>Points: ${op.points}</p>
+                   <div class="progress"><div class="progress-inner" style="width:${op.progress}%"></div></div>
+                   <div class="badge">${op.badge}</div>`;
+    opContainer.appendChild(div);
+  });
 }
 
+// Profile Modal
 function openProfile(){ document.getElementById('profileModal').style.display='flex'; }
 function closeProfile(){ document.getElementById('profileModal').style.display='none'; }
+
+// Logout
 function logout(){ auth.signOut().then(()=>window.location.href="index.html"); }
-function goBack(){ window.location.href="index.html"; }
+
+// Change Password
+function changePassword(){
+  const current = document.getElementById("currentPassword").value;
+  const newPass = document.getElementById("newPassword").value;
+  const confirm = document.getElementById("confirmPassword").value;
+  const msg = document.getElementById("passMsg");
+  msg.textContent="";
+  const user = auth.currentUser;
+
+  if(!current || !newPass || !confirm){ msg.style.color="#f88"; msg.textContent="Fill all fields!"; return;}
+  if(newPass!==confirm){ msg.style.color="#f88"; msg.textContent="New passwords do not match!"; return;}
+
+  const cred = firebase.auth.EmailAuthProvider.credential(user.email, current);
+  user.reauthenticateWithCredential(cred).then(()=>{
+    user.updatePassword(newPass).then(()=>{msg.style.color="#8f8"; msg.textContent="Password changed successfully!";})
+      .catch(err=>{msg.style.color="#f88"; msg.textContent=err.message;});
+  }).catch(err=>{msg.style.color="#f88"; msg.textContent="Current password is incorrect!";});
+}
 </script>
 </body>
 </html>
