@@ -1,78 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Sign Up</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron&display=swap');
-body{margin:0;font-family:'Orbitron',sans-serif;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;}
-.container{background:rgba(0,0,0,0.85);padding:40px;border-radius:15px;width:400px;text-align:center;box-shadow:0 0 25px #7f00ff;}
-h1{color:#a67fff;margin-bottom:20px;}
-input,button{width:100%;padding:12px;margin:8px 0;border:none;border-radius:8px;font-size:16px;}
-input{background:#2c2c4d;color:#fff;}
-input:focus{background:#3a3a5c;outline:none;}
-button{background:#8e24aa;color:#fff;font-weight:bold;cursor:pointer;}
-button:hover{background:#6a1b9a;}
-.msg{height:20px;color:#ff6666;font-weight:bold;}
-.link{margin-top:10px;display:block;cursor:pointer;color:#b39ddb;}
-.link:hover{color:#fff;}
-</style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Signup - Ali Hacking Course</title>
+  <style>
+    body{
+      font-family:'Orbitron',sans-serif;
+      background:#121212;
+      color:#fff;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+    }
+    .signup-box{
+      background:#1e1e1e;
+      padding:30px;
+      border-radius:10px;
+      box-shadow:0 0 10px #000;
+    }
+    input{
+      display:block;
+      width:100%;
+      margin-bottom:15px;
+      padding:10px;
+      border:none;
+      border-radius:5px;
+    }
+    button{
+      padding:10px 20px;
+      border:none;
+      border-radius:5px;
+      background:#8e24aa;
+      color:#fff;
+      cursor:pointer;
+    }
+    button:hover{background:#6a1b9a;}
+    .message{margin-top:10px;color:#f88;}
+  </style>
 </head>
 <body>
-<div class="container">
-<h1>Create Account</h1>
-<div id="msg" class="msg"></div>
-<input id="email" type="email" placeholder="Email"/>
-<input id="password" type="password" placeholder="Password"/>
-<input id="confirm" type="password" placeholder="Confirm Password"/>
-<button onclick="signup()">Sign Up</button>
-<span class="link" onclick="location.href='index.html'">← Back to Login</span>
-</div>
+  <div class="signup-box">
+    <h2>Signup</h2>
+    <input type="email" id="email" placeholder="Email"/>
+    <input type="password" id="password" placeholder="Password"/>
+    <button onclick="signup()">Sign Up</button>
+    <div class="message" id="message"></div>
+  </div>
 
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
-  authDomain: "authdomain-b606b.firebaseapp.com",
-  projectId: "authdomain-b606b",
-  storageBucket: "authdomain-b606b.firebasestorage.app",
-  messagingSenderId: "374508656476",
-  appId: "1:374508656476:web:1a1affe311734602bc5399"
-};
-if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
+      authDomain: "authdomain-b606b.firebaseapp.com",
+      projectId: "authdomain-b606b",
+      storageBucket: "authdomain-b606b.appspot.com",
+      messagingSenderId: "374508656476",
+      appId: "1:374508656476:web:1a1affe311734602bc5399",
+      measurementId: "G-FH5BSP31E7"
+    };
 
-const auth = firebase.auth();
-const db = firebase.firestore();
+    if(!firebase.apps.length){
+      firebase.initializeApp(firebaseConfig);
+    }
 
-function signup(){
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-  const confirm = document.getElementById("confirm").value;
-  const msg = document.getElementById("msg");
-  msg.textContent = "";
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-  if(!email || !password || !confirm){ msg.textContent="All fields required"; return; }
-  if(password !== confirm){ msg.textContent="Passwords do not match"; return; }
-  if(password.length<6){ msg.textContent="Password must be at least 6 characters"; return; }
+    function signup(){
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const messageDiv = document.getElementById("message");
+      messageDiv.textContent = "";
 
-  auth.createUserWithEmailAndPassword(email,password)
-    .then(userCredential=>{
-      return db.collection("users").doc(userCredential.user.uid).set({
-        email: email,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-    })
-    .then(()=>{ alert("Account created! Please login."); window.location.href="index.html"; })
-    .catch(error=>{
-      if(error.code==="auth/email-already-in-use") msg.textContent="Email already registered";
-      else if(error.code==="auth/invalid-email") msg.textContent="Invalid email";
-      else msg.textContent=error.message;
-    });
-}
-</script>
+      if(!email || !password){
+        messageDiv.textContent = "Please fill all fields!";
+        return;
+      }
+
+      auth.createUserWithEmailAndPassword(email,password)
+        .then(userCredential=>{
+          const user = userCredential.user;
+          // Save to Firestore
+          db.collection("users").doc(user.uid).set({
+            email: user.email,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          }).then(()=>{
+            messageDiv.style.color = "#8f8";
+            messageDiv.textContent = "Signup successful! Redirecting to login...";
+            setTimeout(()=>window.location.href="index.html",2000);
+          });
+        })
+        .catch(error=>{
+          console.error(error);
+          messageDiv.textContent = error.message;
+        });
+    }
+  </script>
 </body>
 </html>
