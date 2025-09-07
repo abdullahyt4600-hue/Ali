@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Dashboard - TryHackingMe</title>
 <style>
-body{margin:0;font-family:'Orbitron',sans-serif;background:#0e0e0e;color:#fff;display:flex;flex-direction:row;min-height:100vh;}
+body{margin:0;font-family:'Orbitron',sans-serif;background:#0e0e0e;color:#fff;display:flex;min-height:100vh;}
 .sidebar{width:250px;background:#121212;padding:20px;flex-shrink:0;position:fixed;height:100%;overflow:auto;}
 .sidebar h2{color:#ce93d8;margin-bottom:20px;}
 .sidebar a{display:block;color:#fff;text-decoration:none;padding:10px 5px;border-radius:5px;margin-bottom:5px;transition:0.3s;}
@@ -23,34 +23,30 @@ iframe{width:100%;height:500px;border:none;border-radius:10px;}
 <div class="sidebar">
 <h2 id="welcomeUser">Welcome</h2>
 <a href="#" onclick="showSection('home')">Home</a>
-<a href="#" onclick="showSection('wifi')">WiFi Hacking</a>
-<a href="#" onclick="showSection('linux')">Linux Basics</a>
-<a href="#" onclick="showSection('pentest')">Pentesting</a>
+<a href="#" onclick="showSection('wifi')">Select Your Category - WiFi Hacking</a>
+<a href="#" onclick="showSection('linux')">Select Your Category - Linux Basics</a>
+<a href="#" onclick="showSection('pentest')">Select Your Category - Pentesting</a>
 <a href="#" onclick="logout()">Logout</a>
 </div>
 
 <div class="main">
-<!-- Home Section -->
 <div id="homeSection">
 <h1>Dashboard Home</h1>
-<p>Welcome <span id="userName"></span>! Choose a challenge from the sidebar to start learning.</p>
+<p>Welcome <span id="userName"></span>! Choose a category from the sidebar to start learning.</p>
 </div>
 
-<!-- WiFi Hacking -->
 <div id="wifiSection" style="display:none;">
 <h1>WiFi Hacking</h1>
 <p>Learn WiFi security and hacking techniques.</p>
 <iframe src="https://drive.google.com/file/d/1gkcnrhm6FuXIrDVIe9Gd4FCO9QlLWJxn/preview" allow="autoplay" allowfullscreen></iframe>
 </div>
 
-<!-- Linux Basics -->
 <div id="linuxSection" style="display:none;">
 <h1>Linux Basics</h1>
 <p>Learn Linux commands and terminal skills.</p>
 <iframe src="https://drive.google.com/file/d/YOUR_LINUX_VIDEO_ID/preview" allow="autoplay" allowfullscreen></iframe>
 </div>
 
-<!-- Pentesting -->
 <div id="pentestSection" style="display:none;">
 <h1>Pentesting</h1>
 <p>Introduction to penetration testing techniques.</p>
@@ -96,9 +92,7 @@ function showSection(section){
   document.getElementById('pentestSection').style.display = (section==='pentest')?'block':'none';
 }
 
-function logout(){
-  auth.signOut().then(()=>{ window.location.href="index.html"; });
-}
+function logout(){ auth.signOut().then(()=>{ window.location.href="index.html"; }); }
 </script>
 </body>
 </html>
