@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Admin Panel - HackLearn</title>
+<title>HackLearn Admin Panel</title>
 <style>
 body{margin:0;font-family:'Orbitron',sans-serif;background:#121212;color:#fff;display:flex;flex-direction:row;}
 /* Sidebar */
@@ -56,21 +56,22 @@ tr:hover{background:#333;}
 
 <script>
 const firebaseConfig = {
-  apiKey: "YOUR_FIREBASE_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
+  authDomain: "authdomain-b606b.firebaseapp.com",
+  projectId: "authdomain-b606b",
+  storageBucket: "authdomain-b606b.firebasestorage.app",
+  messagingSenderId: "374508656476",
+  appId: "1:374508656476:web:1a1affe311734602bc5399",
+  measurementId: "G-FH5BSP31E7"
 };
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// Protect page: only admin can access
+// Protect page: only admin email
 auth.onAuthStateChanged(user=>{
-  if(!user || user.email !== "youradminemail@gmail.com"){
+  if(!user || user.email !== "abdullahyt4622@gmail.com"){
     window.location.href="index.html";
   } else {
     loadUsers();
@@ -86,7 +87,7 @@ function loadUsers(){
       const createdAt = data.createdAt ? data.createdAt.toDate().toLocaleString() : "N/A";
       const points = data.points || 0;
       const badges = data.badges || "0";
-      const badgeClass = ["New","Hot","Pro"][Math.floor(Math.random()*3)]; // sample badge for table
+      const badgeClass = ["New","Hot","Pro"][Math.floor(Math.random()*3)]; // sample badge color
       const tr = document.createElement("tr");
       tr.innerHTML=`<td>${data.email}</td>
                     <td>${points}</td>
