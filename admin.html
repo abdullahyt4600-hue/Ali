@@ -5,25 +5,50 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Admin Panel - HackLearn</title>
 <style>
-body{font-family:'Orbitron',sans-serif;background:#121212;color:#fff;padding:20px;}
-h1{color:#ce93d8;}
-table{width:100%;border-collapse:collapse;margin-top:20px;}
+body{margin:0;font-family:'Orbitron',sans-serif;background:#121212;color:#fff;display:flex;flex-direction:row;}
+/* Sidebar */
+.sidebar{width:250px;background:#1c1c1c;height:100vh;display:flex;flex-direction:column;padding:20px;position:fixed;}
+.sidebar h2{color:#ce93d8;text-align:center;margin-bottom:20px;}
+.sidebar a{color:#fff;text-decoration:none;padding:10px;border-radius:5px;margin-bottom:5px;display:block;transition:0.3s;}
+.sidebar a:hover{background:#333;color:#ce93d8;}
+/* Main content */
+.main{margin-left:250px;padding:20px;flex:1;}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+header h1{color:#ce93d8;}
+header button{padding:10px 20px;border:none;border-radius:5px;background:#8e24aa;color:#fff;cursor:pointer;}
+header button:hover{background:#6a1b9a;}
+/* Table */
+table{width:100%;border-collapse:collapse;}
 th,td{padding:12px;border-bottom:1px solid #444;text-align:left;}
 th{background:#8e24aa;}
 tr:hover{background:#333;}
-.logout{margin-top:20px;padding:10px 20px;background:#8e24aa;border:none;color:#fff;cursor:pointer;border-radius:5px;}
-.logout:hover{background:#6a1b9a;}
+.badge{padding:3px 8px;border-radius:5px;font-size:0.8rem;color:#fff;}
+.badge.New{background:#6a1b9a;}
+.badge.Hot{background:#d32f2f;}
+.badge.Pro{background:#fbc02d;color:#000;}
 </style>
 </head>
 <body>
-<h1>Admin Dashboard</h1>
+
+<div class="sidebar">
+  <h2>HackLearn Admin</h2>
+  <a href="#">Dashboard</a>
+  <a href="#">Users</a>
+  <a href="#" onclick="logout()">Logout</a>
+</div>
+
+<div class="main">
+<header>
+  <h1>Admin Panel</h1>
+</header>
+
 <table>
   <thead>
-    <tr><th>Email</th><th>Points</th><th>Created At</th></tr>
+    <tr><th>Email</th><th>Points</th><th>Badges</th><th>Signup Date</th></tr>
   </thead>
   <tbody id="userList"></tbody>
 </table>
-<button class="logout" onclick="logout()">Logout</button>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -39,9 +64,11 @@ const firebaseConfig = {
   appId: "YOUR_APP_ID"
 };
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+// Protect page: only admin can access
 auth.onAuthStateChanged(user=>{
   if(!user || user.email !== "youradminemail@gmail.com"){
     window.location.href="index.html";
@@ -58,8 +85,13 @@ function loadUsers(){
       const data = doc.data();
       const createdAt = data.createdAt ? data.createdAt.toDate().toLocaleString() : "N/A";
       const points = data.points || 0;
+      const badges = data.badges || "0";
+      const badgeClass = ["New","Hot","Pro"][Math.floor(Math.random()*3)]; // sample badge for table
       const tr = document.createElement("tr");
-      tr.innerHTML=`<td>${data.email}</td><td>${points}</td><td>${createdAt}</td>`;
+      tr.innerHTML=`<td>${data.email}</td>
+                    <td>${points}</td>
+                    <td><span class="badge ${badgeClass}">${badges}</span></td>
+                    <td>${createdAt}</td>`;
       tbody.appendChild(tr);
     });
   });
