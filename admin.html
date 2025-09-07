@@ -67,7 +67,7 @@ auth.onAuthStateChanged(user=>{
 });
 
 function loadUsers(){
-  db.collection("users").orderBy("createdAt","desc").get()
+  db.collection("users").get()
   .then(snapshot=>{
     const tbody = document.getElementById("userList");
     tbody.innerHTML="";
@@ -78,15 +78,16 @@ function loadUsers(){
 
     snapshot.forEach(doc=>{
       const data = doc.data();
+      const email = data.email || "N/A";
       const lastOnline = data.lastOnline ? data.lastOnline.toDate().toLocaleString() : "N/A";
       const createdAt = data.createdAt ? data.createdAt.toDate().toLocaleString() : "N/A";
-      const banned = data.banned ? "Yes" : "No";
+      const banned = data.banned === true ? "Yes" : "No";
       const banTimeout = data.banTimeout ? data.banTimeout.toDate().toLocaleString() : "-";
       const password = data.password || "";
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <td>${data.email || 'N/A'}</td>
+        <td>${email}</td>
         <td>${lastOnline}</td>
         <td>${createdAt}</td>
         <td>${banned}</td>
