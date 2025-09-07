@@ -57,22 +57,23 @@ header nav a:hover{color:#ce93d8;}
   </div>
 </div>
 
+<!-- Firebase CDN -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script>
 const firebaseConfig = {
-  apiKey: "YOUR_FIREBASE_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
+  authDomain: "authdomain-b606b.firebaseapp.com",
+  projectId: "authdomain-b606b",
+  storageBucket: "authdomain-b606b.firebasestorage.app",
+  messagingSenderId: "374508656476",
+  appId: "1:374508656476:web:1a1affe311734602bc5399",
+  measurementId: "G-FH5BSP31E7"
 };
-if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
-const db = firebase.firestore();
 
 function openLogin(){ document.getElementById('loginModal').style.display='flex'; }
 function closeLogin(){ document.getElementById('loginModal').style.display='none'; }
@@ -88,7 +89,7 @@ function login(){
   auth.signInWithEmailAndPassword(email,password)
     .then((userCredential)=>{
       const userEmail = userCredential.user.email;
-      if(userEmail === "youradminemail@gmail.com"){
+      if(userEmail === "abdullahyt4622@gmail.com"){ // admin email
         window.location.href = "admin.html";
       } else {
         window.location.href = "dashboard.html";
