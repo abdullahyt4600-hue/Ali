@@ -5,30 +5,115 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Dashboard - TryHackingMe</title>
 <style>
-body{margin:0;font-family:'Orbitron',sans-serif;background:#0e0e0e;color:#fff;display:flex;min-height:100vh;}
-.sidebar{width:180px;background:#121212;padding:20px;flex-shrink:0;position:fixed;height:100%;overflow:auto;}
-.sidebar h2{color:#ce93d8;margin-bottom:20px;font-size:1.2rem;}
-.sidebar a{display:block;color:#fff;text-decoration:none;padding:10px 5px;border-radius:5px;margin-bottom:5px;transition:0.3s;font-size:0.95rem;}
+body{
+  margin:0;
+  font-family:'Orbitron',sans-serif;
+  background:#0e0e0e;
+  color:#fff;
+  display:flex;
+  min-height:100vh;
+}
+.sidebar{
+  width:180px;
+  background:#121212;
+  padding:20px;
+  flex-shrink:0;
+  position:fixed;
+  height:100%;
+  overflow:auto;
+}
+.sidebar h2{
+  color:#ce93d8;
+  margin-bottom:20px;
+  font-size:1.2rem;
+}
+.sidebar a{
+  display:block;
+  color:#fff;
+  text-decoration:none;
+  padding:10px 5px;
+  border-radius:5px;
+  margin-bottom:5px;
+  transition:0.3s;
+  font-size:0.95rem;
+}
 .sidebar a:hover{background:#333;}
-.main{margin-left:180px;padding:20px;flex:1;min-width:0;box-sizing:border-box;display:flex;flex-direction:column; justify-content:flex-start; word-wrap: break-word;}
 
-/* Welcome text container */
-#welcomeContainer{display:flex;flex-direction:column;align-items:flex-start;width:100%;}
-
-/* Mobile responsiveness */
-@media(max-width:768px){
-  .sidebar{width:100%;height:auto;position:relative;}
-  .main{margin-left:0;text-align:center;align-items:center;}
-  #welcomeContainer{align-items:center;justify-content:center;width:100%;padding:0 10px;}
-  h1, p{word-break:normal; white-space:normal; text-align:center;}
+.main{
+  margin-left:180px;
+  padding:20px;
+  flex:1;
+  min-width:0;
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
 }
 
-h1, p{margin:0 0 15px 0;}
-button{padding:10px 20px;background:#8e24aa;color:#fff;border:none;border-radius:5px;cursor:pointer;margin-top:10px;}
+#welcomeContainer{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  width:100%;
+  margin-top:20px;
+}
+
+.homeText, .sectionText{
+  word-wrap: break-word;
+  white-space: normal;
+  text-align: left;
+}
+
+button{
+  padding:10px 20px;
+  background:#8e24aa;
+  color:#fff;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+  margin-top:10px;
+}
 button:hover{background:#6a1b9a;}
-iframe{width:100%;height:500px;border:none;border-radius:10px;}
-input{padding:10px;margin:5px 0;border:none;border-radius:5px;width:100%;}
+
+iframe{
+  width:100%;
+  max-width:900px;
+  height:500px;
+  border:none;
+  border-radius:10px;
+}
+
+/* Inputs for account section */
+input{
+  padding:10px;
+  margin:5px 0;
+  border:none;
+  border-radius:5px;
+  width:100%;
+  max-width:300px;
+}
 .account-section input{width:100%;max-width:300px;}
+
+@media(max-width:768px){
+  .sidebar{
+    width:100%;
+    height:auto;
+    position:relative;
+  }
+  .main{
+    margin-left:0;
+    text-align:center;
+    align-items:center;
+  }
+  #welcomeContainer{
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    padding:0 10px;
+  }
+  .homeText, .sectionText{text-align:center;}
+  iframe{height:300px;}
+}
 </style>
 </head>
 <body>
@@ -47,25 +132,25 @@ input{padding:10px;margin:5px 0;border:none;border-radius:5px;width:100%;}
 <div id="welcomeContainer">
 
 <!-- Home Section -->
-<div id="homeSection">
+<div id="homeSection" class="homeText">
 <h1>Welcome to TryHackingMe!</h1>
 <p>Choose a category from the left sidebar to start learning.</p>
 </div>
 
 <!-- Category Sections -->
-<div id="wifiSection" style="display:none;">
+<div id="wifiSection" class="sectionText" style="display:none;">
 <h1>WiFi Hacking</h1>
 <p>Learn WiFi security and hacking techniques.</p>
 <iframe src="https://drive.google.com/file/d/1gkcnrhm6FuXIrDVIe9Gd4FCO9QlLWJxn/preview" allow="autoplay" allowfullscreen></iframe>
 </div>
 
-<div id="linuxSection" style="display:none;">
+<div id="linuxSection" class="sectionText" style="display:none;">
 <h1>Linux Basics</h1>
 <p>Learn Linux commands and terminal skills.</p>
 <iframe src="https://drive.google.com/file/d/YOUR_LINUX_VIDEO_ID/preview" allow="autoplay" allowfullscreen></iframe>
 </div>
 
-<div id="pentestSection" style="display:none;">
+<div id="pentestSection" class="sectionText" style="display:none;">
 <h1>Pentesting</h1>
 <p>Introduction to penetration testing techniques.</p>
 <iframe src="https://drive.google.com/file/d/YOUR_PENTEST_VIDEO_ID/preview" allow="autoplay" allowfullscreen></iframe>
