@@ -10,24 +10,25 @@ body{margin:0;font-family:'Orbitron',sans-serif;background:#0e0e0e;color:#fff;di
 .sidebar h2{color:#ce93d8;margin-bottom:20px;font-size:1.2rem;}
 .sidebar a{display:block;color:#fff;text-decoration:none;padding:10px 5px;border-radius:5px;margin-bottom:5px;transition:0.3s;font-size:0.95rem;}
 .sidebar a:hover{background:#333;}
-.main{margin-left:180px;padding:20px;flex:1;min-width:0;box-sizing:border-box;}
-.main h1, .main p{max-width:calc(100% - 20px); word-wrap: break-word; margin:0 0 20px 0;}
+.main{margin-left:180px;padding:20px;flex:1;min-width:0;box-sizing:border-box;display:flex;flex-direction:column; justify-content:flex-start; word-wrap: break-word;}
+
+/* Welcome text container */
+#welcomeContainer{display:flex;flex-direction:column;align-items:flex-start;width:100%;}
+
+/* Mobile responsiveness */
+@media(max-width:768px){
+  .sidebar{width:100%;height:auto;position:relative;}
+  .main{margin-left:0;text-align:center;align-items:center;}
+  #welcomeContainer{align-items:center;justify-content:center;width:100%;padding:0 10px;}
+  h1, p{word-break:normal; white-space:normal; text-align:center;}
+}
+
+h1, p{margin:0 0 15px 0;}
 button{padding:10px 20px;background:#8e24aa;color:#fff;border:none;border-radius:5px;cursor:pointer;margin-top:10px;}
 button:hover{background:#6a1b9a;}
 iframe{width:100%;height:500px;border:none;border-radius:10px;}
 input{padding:10px;margin:5px 0;border:none;border-radius:5px;width:100%;}
 .account-section input{width:100%;max-width:300px;}
-
-/* Fix PC welcome text not cut by sidebar */
-#welcomeContainer{margin-left:0; padding-left:0;}
-
-/* Responsive fix for mobile */
-@media(max-width:768px){
-  .sidebar{width:100%;height:auto;position:relative;}
-  .main{margin-left:0; text-align:center;} /* center content on mobile */
-  .main h1, .main p{max-width:90%; margin:0 auto;} /* shrink and center text */
-  iframe{height:300px;}
-}
 </style>
 </head>
 <body>
@@ -44,6 +45,7 @@ input{padding:10px;margin:5px 0;border:none;border-radius:5px;width:100%;}
 
 <div class="main">
 <div id="welcomeContainer">
+
 <!-- Home Section -->
 <div id="homeSection">
 <h1>Welcome to TryHackingMe!</h1>
@@ -83,6 +85,7 @@ input{padding:10px;margin:5px 0;border:none;border-radius:5px;width:100%;}
 <p id="passMsg" style="color:#f88;margin-top:5px;"></p>
 </div>
 </div>
+
 </div>
 </div>
 
