@@ -1,72 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Admin Panel</title>
-<style>
-body{font-family:'Orbitron',sans-serif;background:#121212;color:#fff;padding:20px;}
-h1{color:#ce93d8;}
-table{width:100%;border-collapse:collapse;margin-top:20px;}
-th,td{padding:12px;border-bottom:1px solid #444;text-align:left;}
-th{background:#8e24aa;}
-tr:hover{background:#333;}
-.logout{margin-top:20px;padding:10px 20px;background:#8e24aa;border:none;color:#fff;cursor:pointer;}
-.logout:hover{background:#6a1b9a;}
-</style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Admin Panel - Ali Hacking Course</title>
+  <style>
+    body{font-family:'Orbitron',sans-serif;background:#121212;color:#fff;padding:20px;}
+    h1{color:#ce93d8;}
+    table{width:100%;border-collapse:collapse;margin-top:20px;}
+    th,td{padding:12px;border-bottom:1px solid #444;text-align:left;}
+    th{background:#8e24aa;}
+    tr:hover{background:#333;}
+    .logout{margin-top:20px;padding:10px 20px;background:#8e24aa;border:none;color:#fff;cursor:pointer;}
+    .logout:hover{background:#6a1b9a;}
+    .admin-message{margin-top:10px;padding:10px;background:#6a1b9a;border-radius:5px;}
+  </style>
 </head>
 <body>
-<h1>Admin Dashboard</h1>
-<table>
-<thead>
-<tr><th>Email</th><th>Created At</th></tr>
-</thead>
-<tbody id="userList"></tbody>
-</table>
-<button class="logout" onclick="logout()">Logout</button>
+  <h1>Admin Dashboard</h1>
+  <div id="adminMessage" class="admin-message" style="display:none;">Welcome, Admin!</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Created At</th>
+      </tr>
+    </thead>
+    <tbody id="userList"></tbody>
+  </table>
+  <button class="logout" onclick="logout()">Logout</button>
 
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
-  authDomain: "authdomain-b606b.firebaseapp.com",
-  projectId: "authdomain-b606b",
-  storageBucket: "authdomain-b606b.firebasestorage.app",
-  messagingSenderId: "374508656476",
-  appId: "1:374508656476:web:1a1affe311734602bc5399"
-};
-if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
+      authDomain: "authdomain-b606b.firebaseapp.com",
+      projectId: "authdomain-b606b",
+      storageBucket: "authdomain-b606b.appspot.com",
+      messagingSenderId: "374508656476",
+      appId: "1:374508656476:web:1a1affe311734602bc5399",
+      measurementId: "G-FH5BSP31E7"
+    };
 
-const auth = firebase.auth();
-const db = firebase.firestore();
-const adminEmail = "abdullahyt4622@gmail.com";
+    if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
-auth.onAuthStateChanged(user=>{
-  if(!user) window.location.href="index.html";
-  else if(user.email!==adminEmail) window.location.href="dashboard.html";
-  else loadUsers();
-});
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-function loadUsers(){
-  db.collection("users").orderBy("createdAt","desc").get().then(snapshot=>{
-    const tbody=document.getElementById("userList");
-    tbody.innerHTML="";
-    snapshot.forEach(doc=>{
-      const data = doc.data();
-      const createdAt = data.createdAt? data.createdAt.toDate().toLocaleString() : "N/A";
-      const tr = document.createElement("tr");
-      tr.innerHTML=`<td>${data.email}</td><td>${createdAt}</td>`;
-      tbody.appendChild(tr);
+    const adminEmail = "youradminemail@example.com"; // Replace with your email
+
+    auth.onAuthStateChanged(user=>{
+      if(!user){
+        window.location.href="index.html";
+      } else if(user.email !== adminEmail){
+        alert("You are not authorized!");
+        auth.signOut().then(()=>window.location.href="index.html");
+      } else {
+        document.getElementById("adminMessage").style.display="block";
+        loadUsers();
+      }
     });
-  });
-}
 
-function logout(){
-  auth.signOut().then(()=> window.location.href="index.html");
-}
-</script>
+    function loadUsers(){
+      db.collection("users").orderBy("createdAt","desc").get()
+        .then(snapshot=>{
+          const tbody = document.getElementById("userList");
+          tbody.innerHTML="";
+          if(snapshot.empty){
+            tbody.innerHTML="<tr><td colspan='2'>No users found</td></tr>";
+            return;
+          }
+          snapshot.forEach(doc=>{
+            const data = doc.data();
+            const createdAt = data.createdAt ? data.createdAt.toDate().toLocaleString() : "N/A";
+            const tr = document.createElement("tr");
+            tr.innerHTML=`<td>${data.email}</td><td>${createdAt}</td>`;
+            tbody.appendChild(tr);
+          });
+        })
+        .catch(err=>{
+          console.error(err);
+          alert("Error loading users!");
+        });
+    }
+
+    function logout(){
+      auth.signOut().then(()=>window.location.href="index.html");
+    }
+  </script>
 </body>
 </html>
