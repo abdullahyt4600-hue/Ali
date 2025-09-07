@@ -5,40 +5,63 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Dashboard - TryHackingMe</title>
 <style>
-body{margin:0;font-family:'Orbitron',sans-serif;background:#121212;color:#fff;display:flex;flex-direction:row;}
-.sidebar{width:250px;background:#1e1e1e;height:100vh;position:fixed;overflow-y:auto;padding-top:20px;}
-.sidebar h2{text-align:center;color:#ce93d8;margin-bottom:20px;}
-.sidebar a{display:block;padding:12px 20px;color:#fff;text-decoration:none;margin:5px 0;border-radius:5px;transition:0.3s;cursor:pointer;}
-.sidebar a:hover{background:#6a1b9a;}
-.main{margin-left:250px;padding:20px;width:100%;}
-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+body{margin:0;font-family:'Orbitron',sans-serif;background:#0e0e0e;color:#fff;display:flex;flex-direction:column;}
+header{display:flex;justify-content:space-between;align-items:center;padding:10px 30px;background:#121212;border-bottom:1px solid #333;}
 header h1{color:#ce93d8;}
-button{padding:10px 20px;background:#8e24aa;color:#fff;border:none;border-radius:5px;cursor:pointer;margin-bottom:20px;}
-button:hover{background:#6a1b9a;}
-video{width:100%;max-width:800px;border-radius:10px;margin-top:10px;}
-.profile{margin-top:20px;background:#1e1e1e;padding:20px;border-radius:10px;}
-.profile h3{margin-top:0;}
-.profile input{width:100%;padding:10px;margin:5px 0;border:none;border-radius:5px;background:#2b2b2b;color:#fff;}
-@media(max-width:768px){.sidebar{width:100%;height:auto;position:relative}.main{margin-left:0;}}
+header button{padding:8px 15px;border:none;border-radius:5px;background:#8e24aa;color:#fff;cursor:pointer;}
+header button:hover{background:#6a1b9a;}
+.container{display:flex;flex:1;flex-wrap:wrap;}
+.sidebar{flex:0 0 200px;background:#1e1e1e;padding:20px;min-height:calc(100vh - 50px);}
+.sidebar button{display:block;width:100%;margin:10px 0;padding:10px;background:#2b2b2b;color:#fff;border:none;border-radius:5px;cursor:pointer;text-align:left;}
+.sidebar button:hover{background:#3a1b9a;}
+.main{flex:1;padding:20px;}
+.card{background:#1e1e1e;padding:15px;margin:10px 0;border-radius:10px;}
+#videoFrame{width:100%;height:400px;border:none;border-radius:10px;}
+.backBtn{margin-top:10px;padding:5px 10px;background:#8e24aa;border:none;border-radius:5px;color:#fff;cursor:pointer;}
+.backBtn:hover{background:#6a1b9a;}
+@media(max-width:768px){.container{flex-direction:column;}.sidebar{flex:1;}}
 </style>
 </head>
 <body>
 
-<div class="sidebar">
-  <h2>TryHackingMe</h2>
-  <a onclick="loadContent('wifi')">WiFi Hacking</a>
-  <a onclick="loadContent('web')">Web Hacking</a>
-  <a onclick="loadContent('social')">Social Engineering</a>
-  <a onclick="loadProfile()">My Profile</a>
-  <a onclick="logout()">Logout</a>
-</div>
+<header>
+  <h1>TryHackingMe Dashboard</h1>
+  <button onclick="logout()">Logout</button>
+</header>
 
-<div class="main" id="mainContent">
-  <header>
-    <h1>Welcome to Dashboard</h1>
-  </header>
-  <div id="dashboardHome">
-    <p>Select a challenge from the sidebar to start learning.</p>
+<div class="container">
+  <div class="sidebar">
+    <button onclick="showTab('home')">Home</button>
+    <button onclick="showTab('wifi')">WiFi Hacking</button>
+    <button onclick="showTab('web')">Web Hacking</button>
+    <button onclick="showTab('profile')">Profile</button>
+  </div>
+  <div class="main" id="mainContent">
+    <div id="home" class="tab">
+      <h2>Welcome!</h2>
+      <p>Select a challenge from left sidebar.</p>
+    </div>
+    <div id="wifi" class="tab" style="display:none;">
+      <h2>WiFi Hacking</h2>
+      <p>Click the button below to watch tutorial video.</p>
+      <button onclick="openVideo('https://drive.google.com/uc?export=download&id=16PpL6zUBwytc9fnNouqncArauW10icuH')">View Video</button>
+      <button class="backBtn" onclick="showTab('home')">Back</button>
+    </div>
+    <div id="web" class="tab" style="display:none;">
+      <h2>Web Hacking</h2>
+      <p>Click the button below to watch tutorial video.</p>
+      <button onclick="openVideo('https://drive.google.com/uc?export=download&id=YOUR_WEB_VIDEO_ID')">View Video</button>
+      <button class="backBtn" onclick="showTab('home')">Back</button>
+    </div>
+    <div id="profile" class="tab" style="display:none;">
+      <h2>Profile</h2>
+      <p id="userInfo"></p>
+      <input type="password" id="currentPassword" placeholder="Current Password"/>
+      <input type="password" id="newPassword" placeholder="New Password"/>
+      <button onclick="changePassword()">Change Password</button>
+      <button class="backBtn" onclick="showTab('home')">Back</button>
+      <p id="passMsg"></p>
+    </div>
   </div>
 </div>
 
@@ -58,76 +81,37 @@ const firebaseConfig = {
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+const mainContent = document.getElementById('mainContent');
 
 auth.onAuthStateChanged(user=>{
   if(!user) window.location.href="index.html";
-  else db.collection('users').doc(user.uid).update({
-    lastOnline: firebase.firestore.FieldValue.serverTimestamp()
-  });
+  else{
+    db.collection('users').doc(user.uid).get().then(doc=>{
+      const data = doc.data();
+      document.getElementById('userInfo').innerHTML=`Name: ${data.name}<br>Email: ${data.email}<br>Created At: ${data.createdAt.toDate().toLocaleString()}`;
+    });
+    db.collection('users').doc(user.uid).update({lastOnline: firebase.firestore.FieldValue.serverTimestamp()});
+  }
 });
 
+function showTab(tab){ 
+  document.querySelectorAll('.tab').forEach(el=>el.style.display='none'); 
+  document.getElementById(tab).style.display='block'; 
+}
 function logout(){ auth.signOut().then(()=> window.location.href="index.html"); }
-
-function loadContent(type){
-  const main = document.getElementById('mainContent');
-  let videoSrc="", title="";
-  if(type==='wifi'){ 
-    videoSrc="https://drive.google.com/uc?export=download&id=16PpL6zUBwytc9fnNouqncArauW10icuH";
-    title="WiFi Hacking Challenge";
-  } else if(type==='web'){ 
-    videoSrc="https://drive.google.com/uc?export=download&id=WEB_FILE_ID"; 
-    title="Web Hacking Challenge";
-  } else if(type==='social'){ 
-    videoSrc="https://drive.google.com/uc?export=download&id=SOCIAL_FILE_ID"; 
-    title="Social Engineering Challenge";
-  }
-  main.innerHTML = `
-    <header><h1>${title}</h1></header>
-    <button onclick="backToHome()">⬅ Back</button>
-    <video controls autoplay>
-      <source src="${videoSrc}" type="video/mp4"/>
-    </video>
-  `;
-}
-
-function backToHome(){
-  const main = document.getElementById('mainContent');
-  main.innerHTML = `
-    <header><h1>Welcome to Dashboard</h1></header>
-    <div id="dashboardHome">
-      <p>Select a challenge from the sidebar to start learning.</p>
-    </div>
-  `;
-}
-
-function loadProfile(){
-  const main = document.getElementById('mainContent');
-  const user = auth.currentUser;
-  db.collection('users').doc(user.uid).get().then(doc=>{
-    const data = doc.data();
-    main.innerHTML=`<header><h1>My Profile</h1></header>
-      <div class="profile">
-        <h3>Email: ${data.email}</h3>
-        <h3>Change Password</h3>
-        <input type="password" id="currentPass" placeholder="Current Password"/>
-        <input type="password" id="newPass" placeholder="New Password"/>
-        <button onclick="changePassword()">Update Password</button>
-        <p id="passMsg" style="color:red;"></p>
-      </div>`;
-  });
-}
+function openVideo(url){ window.open(url,"_blank"); }
 
 function changePassword(){
   const user = auth.currentUser;
-  const currentPass = document.getElementById('currentPass').value;
-  const newPass = document.getElementById('newPass').value;
+  const current = document.getElementById('currentPassword').value;
+  const newPass = document.getElementById('newPassword').value;
   const msg = document.getElementById('passMsg');
-  if(!currentPass || !newPass){ msg.textContent="Fill both fields!"; return; }
-
-  const cred = firebase.auth.EmailAuthProvider.credential(user.email, currentPass);
-  user.reauthenticateWithCredential(cred)
-    .then(()=> user.updatePassword(newPass).then(()=> msg.textContent="Password updated!"))
-    .catch(err=> msg.textContent=err.message);
+  msg.textContent='';
+  if(!current || !newPass){ msg.textContent="Fill both fields!"; return; }
+  const credential = firebase.auth.EmailAuthProvider.credential(user.email,current);
+  user.reauthenticateWithCredential(credential).then(()=>{
+    user.updatePassword(newPass).then(()=> msg.style.color="green", msg.textContent="Password changed!");
+  }).catch(err=> msg.textContent=err.message);
 }
 </script>
 </body>
