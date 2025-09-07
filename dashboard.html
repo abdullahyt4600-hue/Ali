@@ -5,19 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Dashboard - HackLearn</title>
 <style>
-body{font-family:'Orbitron',sans-serif;background:#121212;color:#fff;padding:20px;}
-h1{color:#ce93d8;}
-button{padding:10px 20px;background:#8e24aa;border:none;color:#fff;cursor:pointer;border-radius:5px;}
-button:hover{background:#6a1b9a;}
+body{font-family:'Orbitron',sans-serif;background:#121212;color:#fff;margin:0;padding:0;}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px 50px;background:#1c1c1c;}
+header h1{color:#ce93d8;}
+header button{padding:10px 20px;border:none;border-radius:5px;background:#8e24aa;color:#fff;cursor:pointer;}
+header button:hover{background:#6a1b9a;}
+.main{padding:20px;}
+h2{margin-bottom:20px;color:#ce93d8;}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;}
+.card{background:#1e1e1e;padding:20px;border-radius:10px;transition:0.3s;}
+.card:hover{background:#333;}
+.card h3{margin-top:0;}
+.card p{margin-bottom:0;}
 </style>
 </head>
 <body>
-<h1>Welcome to Dashboard</h1>
-<p>Your learning journey starts here!</p>
-<button onclick="logout()">Logout</button>
+<header>
+  <h1>HackLearn Dashboard</h1>
+  <button onclick="logout()">Logout</button>
+</header>
+
+<div class="main">
+  <h2>My Rooms</h2>
+  <div class="cards" id="roomCards"></div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
@@ -29,13 +44,28 @@ const firebaseConfig = {
 };
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
+const db = firebase.firestore();
 
-// Protect page
 auth.onAuthStateChanged(user=>{
   if(!user) window.location.href="index.html";
 });
 
 function logout(){ auth.signOut().then(()=>window.location.href="index.html"); }
+
+// Example rooms
+const rooms = [
+  {title:"Intro to Hacking", description:"Learn basics of ethical hacking.", points:10},
+  {title:"Web Exploitation", description:"Practice web vulnerabilities.", points:20},
+  {title:"Crypto Challenges", description:"Learn cryptography basics.", points:15}
+];
+
+const container = document.getElementById('roomCards');
+rooms.forEach(room=>{
+  const div = document.createElement('div');
+  div.className = 'card';
+  div.innerHTML = `<h3>${room.title}</h3><p>${room.description}</p><p>Points: ${room.points}</p>`;
+  container.appendChild(div);
+});
 </script>
 </body>
 </html>
