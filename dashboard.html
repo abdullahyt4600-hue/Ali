@@ -1,20 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Dashboard - TryHackingMe</title>
 <style>
-body{margin:0;font-family:'Orbitron',sans-serif;background:#0e0e0e;color:#fff;}
-header{display:flex;justify-content:space-between;align-items:center;padding:10px 30px;background:#121212;border-bottom:1px solid #333;}
-header h1{color:#ce93d8;}
-header button{padding:8px 15px;border:none;border-radius:5px;background:#8e24aa;color:#fff;cursor:pointer;}
-header button:hover{background:#6a1b9a;}
-.welcome{padding:20px;font-size:1.2rem;background:#1e1e1e;border-bottom:1px solid #333;}
-.dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;padding:20px;}
-.card{background:#1e1e1e;border-radius:15px;padding:20px;cursor:pointer;transition:0.3s;}
-.card:hover{background:#2b2b2b;transform:scale(1.05);}
-.card h3{margin:0 0 10px;color:#ce93d8;}
+body{margin:0;font-family:'Orbitron',sans-serif;background:#0e0e0e;color:#fff;display:flex;}
+.sidebar{width:220px;background:#1a1a1a;display:flex;flex-direction:column;padding:20px;min-height:100vh;}
+.sidebar h2{color:#ce93d8;margin-bottom:30px;}
+.sidebar a{color:#fff;text-decoration:none;padding:12px;border-radius:5px;margin-bottom:10px;display:block;transition:0.3s;}
+.sidebar a:hover{background:#8e24aa;color:#fff;}
+.main{flex:1;padding:20px;}
+.welcome{font-size:1.5rem;margin-bottom:20px;color:#ce93d8;}
+.section{display:none;}
+.list-item{background:#1e1e1e;border-radius:8px;padding:15px;margin-bottom:15px;cursor:pointer;transition:0.3s;}
+.list-item:hover{background:#2b2b2b;}
+input{width:100%;padding:12px;margin:10px 0;border:none;border-radius:8px;background:#2b2b2b;color:#fff;font-size:1rem;}
+input:focus{outline:none;box-shadow:0 0 5px #ce93d8;}
+button{padding:12px 20px;border:none;border-radius:8px;background:#8e24aa;color:#fff;cursor:pointer;font-weight:bold;margin-top:10px;}
+button:hover{background:#6a1b9a;transition:0.3s;}
+.back-btn{margin-top:10px;padding:8px 15px;background:#333;color:#fff;border:none;border-radius:5px;cursor:pointer;}
+.back-btn:hover{background:#555;}
 .modal{display:none;position:fixed;z-index:1000;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);justify-content:center;align-items:center;}
 .modal-content{position:relative;background:#1e1e1e;padding:20px;border-radius:10px;width:90%;max-width:800px;}
 .modal-content video{width:100%;border-radius:10px;}
@@ -23,24 +29,47 @@ header button:hover{background:#6a1b9a;}
 </head>
 <body>
 
-<header>
-  <h1>TryHackingMe Dashboard</h1>
-  <button onclick="logout()">Logout</button>
-</header>
+<div class="sidebar">
+  <h2>TryHackingMe</h2>
+  <a href="#" onclick="showSection('wifi')">WiFi Hacking</a>
+  <a href="#" onclick="showSection('web')">Web Hacking</a>
+  <a href="#" onclick="showSection('account')">Account Info</a>
+  <a href="#" onclick="logout()">Logout</a>
+</div>
 
-<div class="welcome" id="welcomeUser">Loading...</div>
+<div class="main">
+  <div class="welcome" id="welcomeUser">Loading...</div>
 
-<div class="dashboard-grid">
-  <div class="card" onclick="openVideo('https://drive.google.com/uc?export=download&id=16PpL6zUBwytc9fnNouqncArauW10icuH')">
-    <h3>WiFi Hacking</h3>
-    <p>Click to watch tutorial video</p>
+  <!-- WiFi Hacking Section -->
+  <div id="wifi" class="section">
+    <div class="list-item" onclick="openVideo('https://drive.google.com/uc?export=download&id=16PpL6zUBwytc9fnNouqncArauW10icuH')">
+      <h3>WiFi Hacking Tutorial</h3>
+      <p>Click to watch video</p>
+    </div>
+    <button class="back-btn" onclick="goBack()">Back</button>
   </div>
-  <div class="card" onclick="openVideo('https://drive.google.com/uc?export=download&id=YOUR_WEB_VIDEO_ID')">
-    <h3>Web Hacking</h3>
-    <p>Click to watch tutorial video</p>
+
+  <!-- Web Hacking Section -->
+  <div id="web" class="section">
+    <div class="list-item" onclick="openVideo('https://drive.google.com/uc?export=download&id=YOUR_WEB_VIDEO_ID')">
+      <h3>Web Hacking Tutorial</h3>
+      <p>Click to watch video</p>
+    </div>
+    <button class="back-btn" onclick="goBack()">Back</button>
+  </div>
+
+  <!-- Account Info Section -->
+  <div id="account" class="section">
+    <h3>Account Details</h3>
+    <input type="text" id="name" placeholder="Name" disabled>
+    <input type="email" id="email" placeholder="Email" disabled>
+    <input type="password" id="password" placeholder="New Password">
+    <button onclick="changePassword()">Change Password</button>
+    <button class="back-btn" onclick="goBack()">Back</button>
   </div>
 </div>
 
+<!-- Video Modal -->
 <div class="modal" id="videoModal">
   <div class="modal-content">
     <span class="close" onclick="closeVideo()">&times;</span>
@@ -66,19 +95,28 @@ if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+// Load user data
 auth.onAuthStateChanged(user=>{
   if(!user) window.location.href="index.html";
   else{
     db.collection('users').doc(user.uid).get().then(doc=>{
       if(doc.exists){
         const data = doc.data();
-        document.getElementById('welcomeUser').innerHTML = `Welcome to TryHackingMe, <strong>${data.name}</strong>!`;
-        // Update lastOnline
+        document.getElementById('welcomeUser').innerHTML = `Welcome, <strong>${data.name}</strong>!`;
+        document.getElementById('name').value = data.name;
+        document.getElementById('email').value = data.email;
         db.collection('users').doc(user.uid).update({lastOnline: firebase.firestore.FieldValue.serverTimestamp()});
       }
     });
   }
 });
+
+function showSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.style.display='none');
+  document.getElementById(id).style.display='block';
+}
+
+function goBack(){ document.querySelectorAll('.section').forEach(s=>s.style.display='none'); }
 
 function openVideo(url){
   document.getElementById('videoPlayer').src=url;
@@ -93,6 +131,13 @@ function closeVideo(){
 }
 
 function logout(){ auth.signOut().then(()=>window.location.href="index.html"); }
+
+function changePassword(){
+  const user = auth.currentUser;
+  const newPass = document.getElementById('password').value;
+  if(!newPass){ alert("Enter new password"); return; }
+  user.updatePassword(newPass).then(()=>alert("Password updated!")).catch(err=>alert(err.message));
+}
 </script>
 </body>
 </html>
