@@ -5,22 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Create Account - TryHackingMe</title>
 <style>
-body{font-family:'Orbitron',sans-serif;background:#121212;color:#fff;padding:20px;}
-h1{color:#ce93d8;}
-input{display:block;width:100%;padding:10px;margin:10px 0;border-radius:5px;border:none;}
-button{padding:10px 20px;background:#8e24aa;color:#fff;border:none;border-radius:5px;cursor:pointer;}
+body{margin:0;font-family:'Orbitron',sans-serif;background:#121212;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh;}
+.container{width:90%;max-width:400px;padding:20px;background:#1e1e1e;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.5);}
+h1{color:#ce93d8;text-align:center;margin-bottom:20px;}
+input{width:100%;padding:12px;margin:10px 0;border-radius:5px;border:none;background:#2b2b2b;color:#fff;}
+button{width:100%;padding:12px;background:#8e24aa;color:#fff;border:none;border-radius:5px;cursor:pointer;font-weight:bold;}
 button:hover{background:#6a1b9a;}
-.error{color:red;margin-top:10px;}
+.error{color:red;text-align:center;margin-top:10px;}
+p{text-align:center;margin-top:10px;}
+a{color:#ce93d8;text-decoration:none;}
+a:hover{text-decoration:underline;}
 </style>
 </head>
 <body>
-
-<h1>Create Account</h1>
-<input type="email" id="email" placeholder="Email" required>
-<input type="password" id="password" placeholder="Password" required>
-<button onclick="signup()">Sign Up</button>
-<p class="error" id="error"></p>
-<p>Already have an account? <a href="index.html">Login here</a></p>
+<div class="container">
+  <h1>Create Account</h1>
+  <input type="email" id="email" placeholder="Email" required>
+  <input type="password" id="password" placeholder="Password" required>
+  <button onclick="signup()">Sign Up</button>
+  <p class="error" id="error"></p>
+  <p>Already have an account? <a href="login.html">Login here</a></p>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -54,25 +59,22 @@ function signup(){
 
   auth.createUserWithEmailAndPassword(email, password)
   .then(cred=>{
-    // Save user in Firestore
     db.collection("users").doc(cred.user.uid).set({
       email: email,
-      password: password,  // Optional for testing
+      password: password,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       lastOnline: firebase.firestore.FieldValue.serverTimestamp(),
       banned: false,
       banTimeout: null
     }).then(()=>{
-      // Redirect to login page
-      window.location.href = "index.html";
+      // Redirect to login page after signup
+      window.location.href = "login.html";
     });
   })
   .catch(err=>{
-    console.error(err);
     errorEl.textContent = err.message;
   });
 }
 </script>
-
 </body>
 </html>
