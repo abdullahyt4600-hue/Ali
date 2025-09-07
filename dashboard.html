@@ -5,160 +5,70 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Dashboard - TryHackingMe</title>
 <style>
-body {
-  margin: 0;
-  font-family: 'Orbitron', sans-serif;
-  background: #0e0e0e;
-  color: #fff;
-  display: flex;
-  min-height: 100vh;
-  flex-direction: row;
-}
-
-/* Sidebar */
-.sidebar {
-  width: 250px;
-  background: #121212;
-  padding: 20px;
-  flex-shrink: 0;
-  height: 100vh;
-  overflow-y: auto;
-  position: fixed;
-}
-.sidebar h2 {
-  color: #ce93d8;
-  margin-bottom: 20px;
-  font-size: 1.2rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.sidebar a {
-  display: block;
-  color: #fff;
-  text-decoration: none;
-  padding: 10px 5px;
-  border-radius: 5px;
-  margin-bottom: 5px;
-  transition: 0.3s;
-  white-space: nowrap;
-}
-.sidebar a:hover {background: #333;}
-
-/* Main content */
-.main {
-  margin-left: 250px;
-  padding: 20px;
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-}
-.main h1, .main h2, .main p {margin-top: 0;}
-
-/* Buttons */
-button {
-  padding: 10px 20px;
-  background: #8e24aa;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 10px;
-}
-button:hover {background: #6a1b9a;}
-
-/* Iframe videos */
-iframe {
-  width: 100%;
-  height: 500px;
-  border: none;
-  border-radius: 10px;
-}
-
-/* Account Section */
-.account-section input {
-  width: 100%;
-  max-width: 300px;
-  padding: 10px;
-  margin: 5px 0;
-  border-radius: 5px;
-  border: none;
-}
-
-/* Responsive */
-@media(max-width:768px) {
-  body {flex-direction: column;}
-  .sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
-  }
-  .main {
-    margin-left: 0;
-  }
-  iframe {height: 300px;}
-  .sidebar h2 {
-    text-align: center;
-    white-space: normal;
-  }
-}
+body{margin:0;font-family:'Orbitron',sans-serif;background:#0e0e0e;color:#fff;display:flex;min-height:100vh;}
+.sidebar{width:250px;background:#121212;padding:20px;flex-shrink:0;position:fixed;height:100%;overflow:auto;}
+.sidebar h2{color:#ce93d8;margin-bottom:20px;}
+.sidebar a{display:block;color:#fff;text-decoration:none;padding:10px 5px;border-radius:5px;margin-bottom:5px;transition:0.3s;}
+.sidebar a:hover{background:#333;}
+.main{margin-left:250px;padding:20px;flex:1;}
+button{padding:10px 20px;background:#8e24aa;color:#fff;border:none;border-radius:5px;cursor:pointer;margin-top:10px;}
+button:hover{background:#6a1b9a;}
+iframe{width:100%;height:500px;border:none;border-radius:10px;}
+@media(max-width:768px){.sidebar{width:100%;height:auto;position:relative;}.main{margin-left:0;}}
+input{padding:10px;margin:5px 0;border:none;border-radius:5px;width:100%;}
 </style>
 </head>
 <body>
 
 <div class="sidebar">
-  <h2 id="welcomeUser">Welcome</h2>
-  <a href="#" onclick="showSection('home')">Home</a>
-  <a href="#" onclick="showSection('wifi')">WiFi Hacking</a>
-  <a href="#" onclick="showSection('linux')">Linux Basics</a>
-  <a href="#" onclick="showSection('pentest')">Pentesting</a>
-  <a href="#" onclick="showAccount()">Account Details</a>
-  <a href="#" onclick="logout()">Logout</a>
+<h2 id="welcomeUser">Welcome</h2>
+<a href="#" onclick="showSection('home')">Home</a>
+<a href="#" onclick="showSection('wifi')">WiFi Hacking</a>
+<a href="#" onclick="showSection('linux')">Linux Basics</a>
+<a href="#" onclick="showSection('pentest')">Pentesting</a>
+<a href="#" onclick="showAccount()">Account Details</a>
+<a href="#" onclick="logout()">Logout</a>
 </div>
 
 <div class="main">
-  <!-- Home -->
-  <div id="homeSection">
-    <h1>Welcome to TryHackingMe!</h1>
-    <p>Choose a category from the left sidebar to start learning.</p>
-  </div>
+<!-- Home Section -->
+<div id="homeSection">
+<h1>Welcome to TryHackingMe!</h1>
+<p>Choose a category from the left sidebar to start learning.</p>
+</div>
 
-  <!-- WiFi Hacking -->
-  <div id="wifiSection" style="display:none;">
-    <h1>WiFi Hacking</h1>
-    <p>Learn WiFi security and hacking techniques.</p>
-    <iframe src="https://drive.google.com/file/d/1gkcnrhm6FuXIrDVIe9Gd4FCO9QlLWJxn/preview" allowfullscreen allow="autoplay"></iframe>
-  </div>
+<!-- Category Sections -->
+<div id="wifiSection" style="display:none;">
+<h1>WiFi Hacking</h1>
+<p>Learn WiFi security and hacking techniques.</p>
+<iframe src="https://drive.google.com/file/d/1gkcnrhm6FuXIrDVIe9Gd4FCO9QlLWJxn/preview" allow="autoplay" allowfullscreen></iframe>
+</div>
 
-  <!-- Linux Basics -->
-  <div id="linuxSection" style="display:none;">
-    <h1>Linux Basics</h1>
-    <p>Learn Linux commands and terminal skills.</p>
-    <iframe src="https://drive.google.com/file/d/YOUR_LINUX_VIDEO_ID/preview" allowfullscreen allow="autoplay"></iframe>
-  </div>
+<div id="linuxSection" style="display:none;">
+<h1>Linux Basics</h1>
+<p>Learn Linux commands and terminal skills.</p>
+<iframe src="https://drive.google.com/file/d/YOUR_LINUX_VIDEO_ID/preview" allow="autoplay" allowfullscreen></iframe>
+</div>
 
-  <!-- Pentesting -->
-  <div id="pentestSection" style="display:none;">
-    <h1>Pentesting</h1>
-    <p>Introduction to penetration testing techniques.</p>
-    <iframe src="https://drive.google.com/file/d/YOUR_PENTEST_VIDEO_ID/preview" allowfullscreen allow="autoplay"></iframe>
-  </div>
+<div id="pentestSection" style="display:none;">
+<h1>Pentesting</h1>
+<p>Introduction to penetration testing techniques.</p>
+<iframe src="https://drive.google.com/file/d/YOUR_PENTEST_VIDEO_ID/preview" allow="autoplay" allowfullscreen></iframe>
+</div>
 
-  <!-- Account Details -->
-  <div id="accountDetails" style="display:none;">
-    <h2>Account Details</h2>
-    <p><strong>Username:</strong> <span id="accName"></span></p>
-    <p><strong>Email:</strong> <span id="accEmail"></span></p>
+<!-- Account Details Section -->
+<div id="accountDetails" style="display:none;">
+<h2>Account Details</h2>
+<p><strong>Name:</strong> <span id="accName"></span></p>
+<p><strong>Email:</strong> <span id="accEmail"></span></p>
 
-    <div class="account-section">
-      <h3>Change Password</h3>
-      <input type="password" id="currentPass" placeholder="Current Password"/>
-      <input type="password" id="newPass" placeholder="New Password"/>
-      <button onclick="changePassword()">Update Password</button>
-      <p id="passMsg" style="color:#f88;margin-top:5px;"></p>
-    </div>
-  </div>
+<h3>Change Password</h3>
+<input type="password" id="currentPass" placeholder="Current Password"/>
+<input type="password" id="newPass" placeholder="New Password"/>
+<button onclick="changePassword()">Update Password</button>
+<p id="passMsg" style="color:#f88;margin-top:5px;"></p>
+</div>
+
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -176,20 +86,16 @@ const firebaseConfig = {
   measurementId: "G-FH5BSP31E7"
 };
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// Load user info
-auth.onAuthStateChanged(user => {
+// Auth state
+auth.onAuthStateChanged(user=>{
   if(!user){ window.location.href="index.html"; return; }
   db.collection("users").doc(user.uid).get().then(doc=>{
     if(doc.exists){
       const data = doc.data();
-      const username = data.name || "";
-      document.getElementById('welcomeUser').textContent = "Welcome " + username;
-      document.getElementById('accName').textContent = username;
-      document.getElementById('accEmail').textContent = data.email || "";
+      document.getElementById('welcomeUser').textContent = "Welcome " + (data.name || "");
       db.collection("users").doc(user.uid).update({ lastOnline: firebase.firestore.FieldValue.serverTimestamp() });
     }
   });
@@ -204,30 +110,52 @@ function showSection(section){
   document.getElementById('accountDetails').style.display = 'none';
 }
 
+// Show account details
 function showAccount(){
+  document.getElementById('accountDetails').style.display='block';
   document.getElementById('homeSection').style.display='none';
   document.getElementById('wifiSection').style.display='none';
   document.getElementById('linuxSection').style.display='none';
   document.getElementById('pentestSection').style.display='none';
-  document.getElementById('accountDetails').style.display='block';
+  const user = auth.currentUser;
+  if(user){
+    document.getElementById('accName').textContent = user.displayName || '';
+    document.getElementById('accEmail').textContent = user.email;
+  }
 }
-
-// Logout
-function logout(){ auth.signOut().then(()=>{ window.location.href="index.html"; }); }
 
 // Change password
 function changePassword(){
   const current = document.getElementById('currentPass').value;
-  const newP = document.getElementById('newPass').value;
+  const newPass = document.getElementById('newPass').value;
   const msg = document.getElementById('passMsg');
-  msg.textContent='';
-  if(!current || !newP){ msg.textContent="Fill both fields!"; return; }
+  msg.textContent = '';
+
+  if(!current || !newPass){ 
+    msg.textContent='Please fill both fields!'; 
+    return; 
+  }
+
   const user = auth.currentUser;
-  const cred = firebase.auth.EmailAuthProvider.credential(user.email,current);
-  user.reauthenticateWithCredential(cred).then(()=>{
-    user.updatePassword(newP).then(()=>{ msg.textContent="Password updated!"; }).catch(e=>{ msg.textContent=e.message; });
-  }).catch(e=>{ msg.textContent=e.message; });
+  const credential = firebase.auth.EmailAuthProvider.credential(user.email, current);
+
+  user.reauthenticateWithCredential(credential).then(()=>{
+    user.updatePassword(newPass).then(()=>{
+      msg.style.color='lightgreen';
+      msg.textContent='Password updated successfully!';
+      document.getElementById('currentPass').value='';
+      document.getElementById('newPass').value='';
+    }).catch(error=>{
+      msg.textContent = "Error: "+error.message;
+    });
+  }).catch(error=>{
+    msg.textContent = "Re-authentication failed: "+error.message;
+  });
 }
+
+// Logout
+function logout(){ auth.signOut().then(()=>{ window.location.href="index.html"; }); }
 </script>
+
 </body>
 </html>
