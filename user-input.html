@@ -3,55 +3,81 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>User Input Submission</title>
+<title>User Submissions - TryHackingMe</title>
 <style>
-body{font-family:'Orbitron',sans-serif;background:#121212;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh;}
-.box{background:#1e1e1e;padding:30px;border-radius:10px;width:350px;text-align:center;}
-input{width:100%;padding:10px;margin:10px 0;border-radius:5px;border:none;}
-button{padding:10px 20px;border:none;border-radius:5px;background:#8e24aa;color:#fff;cursor:pointer;width:100%;}
-button:hover{background:#6a1b9a;}
-#message{margin-top:15px;color:#8f8;word-break:break-word;}
+body{margin:0;font-family:'Orbitron',sans-serif;background:#0e0e0e;color:#fff;display:flex;flex-direction:column;}
+header{display:flex;justify-content:space-between;align-items:center;padding:10px 30px;background:#121212;border-bottom:1px solid #333;}
+header h1{color:#ce93d8;}
+header button{padding:8px 15px;border:none;border-radius:5px;background:#8e24aa;color:#fff;cursor:pointer;}
+header button:hover{background:#6a1b9a;}
+.container{padding:20px;}
+input,textarea{width:100%;padding:10px;margin:10px 0;border:none;border-radius:5px;background:#2b2b2b;color:#fff;}
+button.submitBtn{padding:10px 20px;border:none;border-radius:5px;background:#8e24aa;color:#fff;cursor:pointer;}
+button.submitBtn:hover{background:#6a1b9a;}
+#msg{margin-top:10px;color:#f88;font-size:0.9rem;}
 </style>
 </head>
 <body>
-<div class="box">
-<h2>Submit Info</h2>
-<input type="text" id="email" placeholder="Enter Email"/>
-<input type="password" id="password" placeholder="Enter Password"/>
-<button onclick="submitInfo()">Submit</button>
-<div id="message"></div>
+
+<header>
+  <h1>Submit Challenge</h1>
+  <button onclick="logout()">Logout</button>
+</header>
+
+<div class="container">
+  <h2>Submit Your Solution</h2>
+  <input type="text" id="challenge" placeholder="Challenge Name"/>
+  <textarea id="solution" placeholder="Enter your solution"></textarea>
+  <button class="submitBtn" onclick="submitSolution()">Submit</button>
+  <p id="msg"></p>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <script>
 const firebaseConfig = {
-apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
-authDomain: "authdomain-b606b.firebaseapp.com",
-projectId: "authdomain-b606b",
-storageBucket: "authdomain-b606b.firebasestorage.app",
-messagingSenderId: "374508656476",
-appId: "1:374508656476:web:1a1affe311734602bc5399",
-measurementId: "G-FH5BSP31E7"
+  apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
+  authDomain: "authdomain-b606b.firebaseapp.com",
+  projectId: "authdomain-b606b",
+  storageBucket: "authdomain-b606b.appspot.com",
+  messagingSenderId: "374508656476",
+  appId: "1:374508656476:web:1a1affe311734602bc5399"
 };
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-const db=firebase.firestore();
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-function submitInfo(){
-const email=document.getElementById("email").value;
-const password=document.getElementById("password").value;
-const msg=document.getElementById("message");
-if(!email || !password){msg.style.color="#f88"; msg.textContent="Fill both fields!"; return;}
-db.collection("submissions").add({
-email,password,submittedAt:firebase.firestore.FieldValue.serverTimestamp()
-}).then(()=>{
-msg.style.color="#8f8";
-msg.textContent="Submitted successfully!";
-document.getElementById("email").value="";
-document.getElementById("password").value="";
-}).catch(err=>{msg.style.color="#f88"; msg.textContent=err.message;});
+auth.onAuthStateChanged(user=>{
+  if(!user) window.location.href="index.html";
+});
+
+function submitSolution(){
+  const challenge = document.getElementById('challenge').value.trim();
+  const solution = document.getElementById('solution').value.trim();
+  const msg = document.getElementById('msg');
+  msg.textContent='';
+  const user = auth.currentUser;
+  if(!challenge || !solution){ msg.textContent="All fields are required!"; return; }
+  
+  db.collection('submissions').add({
+    uid: user.uid,
+    email: user.email,
+    challenge: challenge,
+    solution: solution,
+    submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(()=>{
+    msg.style.color="green";
+    msg.textContent="Submission successful!";
+    document.getElementById('challenge').value='';
+    document.getElementById('solution').value='';
+  }).catch(err=>{
+    msg.textContent = err.message;
+  });
 }
+
+function logout(){ auth.signOut().then(()=> window.location.href="index.html"); }
 </script>
 </body>
 </html>
