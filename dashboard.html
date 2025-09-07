@@ -5,38 +5,48 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Dashboard - TryHackingMe</title>
 <style>
-body{margin:0;font-family:'Orbitron',sans-serif;background:#0e0e0e;color:#fff;}
-header{display:flex;justify-content:space-between;align-items:center;padding:20px 50px;background:#121212;border-bottom:1px solid #333;}
-header h1{color:#ce93d8;}
-header nav a{margin-left:20px;color:#fff;text-decoration:none;font-weight:bold;cursor:pointer;transition:0.3s;}
-header nav a:hover{color:#ce93d8;}
-.main-content{padding:30px;}
+body{margin:0;font-family:'Orbitron',sans-serif;background:#0e0e0e;color:#fff;display:flex;height:100vh;}
+.sidebar{width:250px;background:#121212;padding:20px;display:flex;flex-direction:column;}
+.sidebar h2{color:#ce93d8;margin-bottom:30px;}
+.sidebar a{color:#fff;text-decoration:none;padding:10px;border-radius:5px;margin-bottom:10px;display:block;transition:0.3s;}
+.sidebar a:hover{background:#8e24aa;}
+.main-content{flex:1;padding:30px;overflow-y:auto;}
 .welcome{font-size:1.5rem;margin-bottom:20px;}
 .card{background:#1e1e1e;padding:20px;border-radius:10px;margin:10px 0;}
 .card button{padding:10px 20px;border:none;border-radius:5px;background:#8e24aa;color:#fff;cursor:pointer;}
 .card button:hover{background:#6a1b9a;}
+.back-btn{padding:8px 15px;background:#8e24aa;border:none;border-radius:5px;color:#fff;cursor:pointer;margin-bottom:20px;}
+.back-btn:hover{background:#6a1b9a;}
+iframe{width:100%;max-width:800px;height:450px;border-radius:10px;margin-top:20px;}
+@media(max-width:768px){body{flex-direction:column}.sidebar{width:100%;flex-direction:row;overflow-x:auto}.sidebar a{margin-right:10px;margin-bottom:0}.main-content{padding:15px}}
 </style>
 </head>
 <body>
-<header>
-  <h1>TryHackingMe Dashboard</h1>
-  <nav>
-    <a onclick="logout()">Logout</a>
-  </nav>
-</header>
+
+<div class="sidebar">
+  <h2>TryHackingMe</h2>
+  <a href="#" onclick="showHome()">Home</a>
+  <a href="#" onclick="showWiFi()">WiFi Hacking</a>
+  <a href="#" onclick="showOther()">Other Challenges</a>
+  <a href="#" onclick="logout()">Logout</a>
+</div>
 
 <div class="main-content">
-  <div class="welcome" id="welcomeUser">Loading...</div>
-  
-  <div class="card">
-    <h3>WiFi Hacking</h3>
-    <p>Learn WiFi security basics and hacking techniques safely.</p>
-    <button onclick="window.location.href='wifi.html'">Start Video</button>
-  </div>
-
-  <div class="card">
-    <h3>Other Challenges</h3>
-    <p>Explore more challenges and labs to improve your skills.</p>
+  <div id="content">
+    <div class="welcome" id="welcomeUser">Loading...</div>
+    <div id="homeContent">
+      <div class="card"><h3>Welcome</h3><p>Choose a challenge from the menu on the left.</p></div>
+    </div>
+    <div id="wifiContent" style="display:none;">
+      <button class="back-btn" onclick="showHome()">← Back</button>
+      <h2>WiFi Hacking</h2>
+      <iframe src="https://drive.google.com/file/d/16PpL6zUBwytc9fnNouqncArauW10icuH/preview" allowfullscreen allow="autoplay"></iframe>
+    </div>
+    <div id="otherContent" style="display:none;">
+      <button class="back-btn" onclick="showHome()">← Back</button>
+      <h2>Other Challenges</h2>
+      <p>More interactive labs and challenges will appear here.</p>
+    </div>
   </div>
 </div>
 
@@ -64,17 +74,32 @@ auth.onAuthStateChanged(user=>{
       if(doc.exists){
         const data = doc.data();
         document.getElementById('welcomeUser').textContent = `Welcome, ${data.name}!`;
-        // Update last online
         db.collection('users').doc(user.uid).update({ lastOnline: firebase.firestore.FieldValue.serverTimestamp() });
       }
     });
-  } else {
+  }else{
     window.location.href="index.html";
   }
 });
 
 function logout(){
   auth.signOut().then(()=>{ window.location.href="index.html"; });
+}
+
+function showHome(){
+  document.getElementById('homeContent').style.display='block';
+  document.getElementById('wifiContent').style.display='none';
+  document.getElementById('otherContent').style.display='none';
+}
+function showWiFi(){
+  document.getElementById('homeContent').style.display='none';
+  document.getElementById('wifiContent').style.display='block';
+  document.getElementById('otherContent').style.display='none';
+}
+function showOther(){
+  document.getElementById('homeContent').style.display='none';
+  document.getElementById('wifiContent').style.display='none';
+  document.getElementById('otherContent').style.display='block';
 }
 </script>
 </body>
