@@ -10,7 +10,7 @@ header{display:flex;justify-content:space-between;align-items:center;padding:20p
 header h1{color:#ce93d8;}
 header nav a{margin-left:20px;color:#fff;text-decoration:none;font-weight:bold;cursor:pointer;transition:0.3s;}
 header nav a:hover{color:#ce93d8;}
-.hero{display:flex;flex-direction:row;justify-content:space-around;align-items:center;height:90vh;background:linear-gradient(135deg, #6a1b9a, #8e24aa);padding:20px;}
+.hero{display:flex;flex-direction:row;justify-content:space-around;align-items:center;height:90vh;padding:20px;}
 .hero .text{max-width:500px;}
 .hero h1{font-size:3rem;margin-bottom:20px;}
 .hero p{font-size:1.2rem;margin-bottom:30px;}
@@ -57,7 +57,6 @@ header nav a:hover{color:#ce93d8;}
   </div>
 </div>
 
-<!-- Firebase CDN -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -82,14 +81,14 @@ function login(){
   const email = document.getElementById('loginEmail').value;
   const password = document.getElementById('loginPassword').value;
   const msg = document.getElementById('loginMsg');
-  msg.textContent = '';
+  msg.textContent='';
 
-  if(!email || !password){ msg.textContent = "Please enter email and password!"; return; }
+  if(!email || !password){ msg.textContent="Please enter email and password!"; return; }
 
   auth.signInWithEmailAndPassword(email,password)
     .then((userCredential)=>{
       const userEmail = userCredential.user.email;
-      if(userEmail === "abdullahyt4622@gmail.com"){ // admin email
+      if(userEmail === "abdullahyt4622@gmail.com"){
         window.location.href = "admin.html";
       } else {
         window.location.href = "dashboard.html";
