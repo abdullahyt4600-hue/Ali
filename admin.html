@@ -5,38 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Admin Panel - TryHackingMe</title>
 <style>
-body{font-family:'Orbitron',sans-serif;background:#121212;color:#fff;padding:20px;}
-h1{color:#ce93d8;}
+body{margin:0;font-family:'Orbitron',sans-serif;background:#0e0e0e;color:#fff;padding:20px;}
+h1{color:#ce93d8;margin-bottom:20px;}
 table{width:100%;border-collapse:collapse;margin-top:20px;}
 th,td{padding:12px;border-bottom:1px solid #444;text-align:left;}
 th{background:#8e24aa;}
 tr:hover{background:#333;}
 .logout{margin-top:20px;padding:10px 20px;background:#8e24aa;border:none;color:#fff;cursor:pointer;}
 .logout:hover{background:#6a1b9a;}
+.section{margin-bottom:40px;}
 </style>
 </head>
 <body>
 <h1>Admin Panel - TryHackingMe</h1>
 
+<div class="section">
 <h2>Registered Users</h2>
 <table>
 <thead>
-<tr>
-<th>Name</th><th>Email</th><th>Signup Date</th><th>Last Online</th>
-</tr>
+<tr><th>Name</th><th>Email</th><th>Signup Date</th><th>Last Online</th></tr>
 </thead>
-<tbody id="userList">Loading users...</tbody>
+<tbody id="userList"><tr><td colspan="4">Loading users...</td></tr></tbody>
 </table>
+</div>
 
+<div class="section">
 <h2>User Submissions</h2>
 <table>
 <thead>
-<tr>
-<th>Email</th><th>Challenge</th><th>Solution</th><th>Submitted At</th>
-</tr>
+<tr><th>Email</th><th>Challenge</th><th>Solution</th><th>Submitted At</th></tr>
 </thead>
-<tbody id="submissionList">Loading submissions...</tbody>
+<tbody id="submissionList"><tr><td colspan="4">Loading submissions...</td></tr></tbody>
 </table>
+</div>
 
 <button class="logout" onclick="logout()">Logout</button>
 
@@ -54,45 +55,59 @@ const firebaseConfig = {
   appId: "1:374508656476:web:1a1affe311734602bc5399",
   measurementId: "G-FH5BSP31E7"
 };
+
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+// Only allow admin email
+const adminEmail = "abdullahyt4622@gmail.com";
+
 auth.onAuthStateChanged(user=>{
-  if(!user) window.location.href="index.html";
-  else loadUsers();
+  if(!user || user.email!==adminEmail){
+    window.location.href="index.html";
+  } else {
+    loadUsers();
+    loadSubmissions();
+  }
 });
 
 function loadUsers(){
   db.collection("users").orderBy("createdAt","desc").get().then(snapshot=>{
-    const tbody = document.getElementById('userList');
-    tbody.innerHTML = "";
+    const tbody = document.getElementById("userList");
+    tbody.innerHTML="";
     if(snapshot.empty){
       tbody.innerHTML="<tr><td colspan='4'>No users found</td></tr>";
     } else {
       snapshot.forEach(doc=>{
         const data = doc.data();
-        const createdAt = data.createdAt ? data.createdAt.toDate().toLocaleString() : "N/A";
+        const name = data.name || "N/A";
+        const email = data.email || "N/A";
+        const signup = data.createdAt ? data.createdAt.toDate().toLocaleString() : "N/A";
         const lastOnline = data.lastOnline ? data.lastOnline.toDate().toLocaleString() : "N/A";
-        const tr = document.createElement('tr');
-        tr.innerHTML=`<td>${data.name}</td><td>${data.email}</td><td>${createdAt}</td><td>${lastOnline}</td>`;
+        const tr = document.createElement("tr");
+        tr.innerHTML=`<td>${name}</td><td>${email}</td><td>${signup}</td><td>${lastOnline}</td>`;
         tbody.appendChild(tr);
       });
     }
   });
+}
 
-  // Load submissions if any
+function loadSubmissions(){
   db.collection("submissions").orderBy("submittedAt","desc").get().then(snapshot=>{
-    const tbody = document.getElementById('submissionList');
+    const tbody = document.getElementById("submissionList");
     tbody.innerHTML="";
     if(snapshot.empty){
       tbody.innerHTML="<tr><td colspan='4'>No submissions found</td></tr>";
     } else {
       snapshot.forEach(doc=>{
         const data = doc.data();
+        const email = data.email || "N/A";
+        const challenge = data.challenge || "N/A";
+        const solution = data.solution || "N/A";
         const submittedAt = data.submittedAt ? data.submittedAt.toDate().toLocaleString() : "N/A";
-        const tr = document.createElement('tr');
-        tr.innerHTML=`<td>${data.email}</td><td>${data.challenge}</td><td>${data.solution}</td><td>${submittedAt}</td>`;
+        const tr = document.createElement("tr");
+        tr.innerHTML=`<td>${email}</td><td>${challenge}</td><td>${solution}</td><td>${submittedAt}</td>`;
         tbody.appendChild(tr);
       });
     }
