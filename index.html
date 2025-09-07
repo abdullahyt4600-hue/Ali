@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>HackLearn - Learn Cybersecurity</title>
+<title>HackLearn - Cybersecurity Learning</title>
 <style>
 body{margin:0;font-family:'Orbitron',sans-serif;background:#0e0e0e;color:#fff;}
 header{display:flex;justify-content:space-between;align-items:center;padding:20px 50px;background:#121212;border-bottom:1px solid #333;}
@@ -45,6 +45,7 @@ header nav a:hover{color:#ce93d8;}
   <img src="assets/hero.png" alt="Cybersecurity Learning">
 </section>
 
+<!-- Login Modal -->
 <div class="modal" id="loginModal">
   <div class="modal-content">
     <span class="close" onclick="closeLogin()">&times;</span>
@@ -62,12 +63,12 @@ header nav a:hover{color:#ce93d8;}
 
 <script>
 const firebaseConfig = {
-  apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
-  authDomain: "authdomain-b606b.firebaseapp.com",
-  projectId: "authdomain-b606b",
-  storageBucket: "authdomain-b606b.appspot.com",
-  messagingSenderId: "374508656476",
-  appId: "1:374508656476:web:1a1affe311734602bc5399"
+  apiKey: "YOUR_FIREBASE_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
@@ -94,13 +95,7 @@ function login(){
       }
     })
     .catch((error)=>{
-      if(error.code === "auth/wrong-password" || error.code === "auth/user-not-found"){
-        msg.textContent = "Email or password is incorrect!";
-      } else if(error.code === "auth/invalid-email"){
-        msg.textContent = "Invalid email format!";
-      } else {
-        msg.textContent = "Login failed. Try again!";
-      }
+      msg.textContent = "Email or password is incorrect!";
     });
 }
 </script>
