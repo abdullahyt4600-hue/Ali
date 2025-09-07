@@ -6,25 +6,25 @@
 <title>Sign Up - TryHackingMe</title>
 <style>
 body{margin:0;font-family:'Orbitron',sans-serif;background:#0e0e0e;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh;}
-.signup-box{background:#1e1e1e;padding:40px;border-radius:10px;width:300px;text-align:center;}
-.signup-box h2{color:#ce93d8;}
-.signup-box input{width:100%;padding:10px;margin:10px 0;border:none;border-radius:5px;background:#2b2b2b;color:#fff;}
-.signup-box button{padding:10px 20px;border:none;border-radius:5px;background:#8e24aa;color:#fff;cursor:pointer;width:100%;}
-.signup-box button:hover{background:#6a1b9a;}
-#signupMsg{color:red;font-size:0.9rem;}
+form{background:#1e1e1e;padding:30px;border-radius:10px;width:300px;text-align:center;}
+input{width:100%;padding:10px;margin:10px 0;border:none;border-radius:5px;background:#2b2b2b;color:#fff;}
+button{padding:10px 20px;border:none;border-radius:5px;background:#8e24aa;color:#fff;cursor:pointer;width:100%;}
+button:hover{background:#6a1b9a;}
+#msg{margin-top:10px;color:#f88;font-size:0.9rem;}
+a{color:#ce93d8;text-decoration:none;display:block;margin-top:10px;}
 </style>
 </head>
 <body>
 
-<div class="signup-box">
-<h2>Create Account</h2>
-<input type="text" id="signupName" placeholder="Full Name"/>
-<input type="email" id="signupEmail" placeholder="Email"/>
-<input type="password" id="signupPass" placeholder="Password"/>
-<button onclick="signup()">Sign Up</button>
-<p id="signupMsg"></p>
-<p>Already have account? <a href="index.html">Login →</a></p>
-</div>
+<form id="signupForm">
+  <h2>Create Account</h2>
+  <input type="text" id="name" placeholder="Full Name"/>
+  <input type="email" id="email" placeholder="Email"/>
+  <input type="password" id="password" placeholder="Password"/>
+  <button type="submit">Sign Up</button>
+  <p id="msg"></p>
+  <a href="index.html">Already have account? Login</a>
+</form>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -43,27 +43,35 @@ if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-function signup(){
-  const name = document.getElementById('signupName').value;
-  const email = document.getElementById('signupEmail').value;
-  const password = document.getElementById('signupPass').value;
-  const msg = document.getElementById('signupMsg');
+document.getElementById('signupForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const msg = document.getElementById('msg');
   msg.textContent='';
 
-  if(!name || !email || !password){ msg.textContent="All fields are required!"; return; }
+  if(!name || !email || !password){ msg.textContent="All fields required!"; return; }
 
   auth.createUserWithEmailAndPassword(email,password)
     .then(userCredential=>{
       const user = userCredential.user;
-      db.collection("users").doc(user.uid).set({
-        name:name,
-        email:email,
+      return db.collection('users').doc(user.uid).set({
+        name: name,
+        email: email,
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         lastOnline: firebase.firestore.FieldValue.serverTimestamp()
-      }).then(()=> window.location.href="index.html");
+      });
     })
-    .catch(error=>{ msg.textContent = error.message; });
-}
+    .then(()=>{
+      msg.style.color="green";
+      msg.textContent="Account created! Redirecting to login...";
+      setTimeout(()=> window.location.href="index.html",1500);
+    })
+    .catch(err=>{
+      msg.textContent = err.message;
+    });
+});
 </script>
 </body>
 </html>
