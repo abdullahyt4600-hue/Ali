@@ -3,78 +3,42 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>TryHackingMe Dashboard</title>
+<title>Dashboard - TryHackingMe</title>
 <style>
-*{box-sizing:border-box;}
-body{margin:0;font-family:'Orbitron',sans-serif;background:#121212;color:#fff;display:flex;min-height:100vh;}
-.sidebar{width:220px;background:#1c1c1c;display:flex;flex-direction:column;padding:20px;position:fixed;top:0;bottom:0;left:0;}
-.sidebar h2{color:#ce93d8;text-align:center;margin-bottom:20px;}
-.sidebar a{color:#fff;text-decoration:none;padding:10px;border-radius:5px;margin-bottom:5px;display:block;transition:0.3s;}
-.sidebar a:hover{background:#333;color:#ce93d8;}
-.main{margin-left:220px;padding:20px;flex:1;}
+body{margin:0;font-family:'Orbitron',sans-serif;background:#121212;color:#fff;display:flex;flex-direction:row;}
+.sidebar{width:250px;background:#1e1e1e;height:100vh;position:fixed;overflow-y:auto;padding-top:20px;}
+.sidebar h2{text-align:center;color:#ce93d8;margin-bottom:20px;}
+.sidebar a{display:block;padding:12px 20px;color:#fff;text-decoration:none;margin:5px 0;border-radius:5px;transition:0.3s;cursor:pointer;}
+.sidebar a:hover{background:#6a1b9a;}
+.main{margin-left:250px;padding:20px;width:100%;}
 header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
 header h1{color:#ce93d8;}
-header button{padding:8px 15px;border:none;border-radius:5px;background:#8e24aa;color:#fff;cursor:pointer;}
-header button:hover{background:#6a1b9a;}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;}
-.card{background:#1e1e1e;padding:20px;border-radius:10px;position:relative;transition:0.3s;}
-.card:hover{background:#333;}
-.card h3{margin-top:0;color:#ce93d8;}
-.card p{margin:5px 0;}
-.progress{background:#333;width:100%;height:10px;border-radius:5px;margin-top:10px;overflow:hidden;}
-.progress-inner{background:#8e24aa;height:10px;width:0%;border-radius:5px;transition:width 1s;}
-.badge{position:absolute;top:10px;right:10px;background:#8e24aa;padding:5px 10px;border-radius:5px;font-size:0.8rem;color:#fff;}
-#profileModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);justify-content:center;align-items:center;z-index:100;}
-#profileModal .modal-content{background:#1e1e1e;padding:20px;border-radius:10px;width:300px;text-align:center;}
-#profileModal .modal-content input{width:90%;padding:8px;margin:5px 0;border-radius:5px;border:none;}
-#profileModal .close{color:#fff;float:right;font-size:20px;cursor:pointer;}
-.button-change{padding:8px 15px;border:none;border-radius:5px;background:#8e24aa;color:#fff;cursor:pointer;margin-top:10px;width:95%;}
-.button-change:hover{background:#6a1b9a;}
+button{padding:10px 20px;background:#8e24aa;color:#fff;border:none;border-radius:5px;cursor:pointer;margin-bottom:20px;}
+button:hover{background:#6a1b9a;}
+video{width:100%;max-width:800px;border-radius:10px;margin-top:10px;}
+.profile{margin-top:20px;background:#1e1e1e;padding:20px;border-radius:10px;}
+.profile h3{margin-top:0;}
+.profile input{width:100%;padding:10px;margin:5px 0;border:none;border-radius:5px;background:#2b2b2b;color:#fff;}
+@media(max-width:768px){.sidebar{width:100%;height:auto;position:relative}.main{margin-left:0;}}
 </style>
 </head>
 <body>
 
 <div class="sidebar">
   <h2>TryHackingMe</h2>
-  <a href="#" onclick="openProfile()">Profile</a>
-  <a href="#">Rooms</a>
-  <a href="#">Operations</a>
-  <a href="#" onclick="logout()">Logout</a>
+  <a onclick="loadContent('wifi')">WiFi Hacking</a>
+  <a onclick="loadContent('web')">Web Hacking</a>
+  <a onclick="loadContent('social')">Social Engineering</a>
+  <a onclick="loadProfile()">My Profile</a>
+  <a onclick="logout()">Logout</a>
 </div>
 
-<div class="main">
-<header>
-  <h1>Dashboard</h1>
-  <button onclick="logout()">Logout</button>
-</header>
-
-<div class="profile-box">
-  <h3 id="userEmail">Email: </h3>
-  <p>Points: <span id="userPoints">0</span></p>
-  <p>Badges: <span id="userBadges">0</span></p>
-</div>
-
-<h2>Rooms</h2>
-<div class="cards" id="roomCards"></div>
-
-<h2>Operations / Labs</h2>
-<div class="cards" id="operationCards"></div>
-</div>
-
-<!-- Profile Modal -->
-<div id="profileModal">
-  <div class="modal-content">
-    <span class="close" onclick="closeProfile()">&times;</span>
-    <h3>Account Info</h3>
-    <p id="profileEmail"></p>
-    <p id="profilePoints"></p>
-    <p id="profileBadges"></p>
-    <h4>Change Password</h4>
-    <input type="password" id="currentPassword" placeholder="Current Password"/>
-    <input type="password" id="newPassword" placeholder="New Password"/>
-    <input type="password" id="confirmPassword" placeholder="Confirm New Password"/>
-    <button class="button-change" onclick="changePassword()">Change Password</button>
-    <p id="passMsg"></p>
+<div class="main" id="mainContent">
+  <header>
+    <h1>Welcome to Dashboard</h1>
+  </header>
+  <div id="dashboardHome">
+    <p>Select a challenge from the sidebar to start learning.</p>
   </div>
 </div>
 
@@ -87,10 +51,9 @@ const firebaseConfig = {
   apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
   authDomain: "authdomain-b606b.firebaseapp.com",
   projectId: "authdomain-b606b",
-  storageBucket: "authdomain-b606b.firebasestorage.app",
+  storageBucket: "authdomain-b606b.appspot.com",
   messagingSenderId: "374508656476",
-  appId: "1:374508656476:web:1a1affe311734602bc5399",
-  measurementId: "G-FH5BSP31E7"
+  appId: "1:374508656476:web:1a1affe311734602bc5399"
 };
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
@@ -98,85 +61,73 @@ const db = firebase.firestore();
 
 auth.onAuthStateChanged(user=>{
   if(!user) window.location.href="index.html";
-  else loadUser(user);
+  else db.collection('users').doc(user.uid).update({
+    lastOnline: firebase.firestore.FieldValue.serverTimestamp()
+  });
 });
 
-function loadUser(user){
-  document.getElementById("userEmail").textContent = "Email: "+user.email;
+function logout(){ auth.signOut().then(()=> window.location.href="index.html"); }
 
-  db.collection("users").doc(user.uid).get().then(doc=>{
-    if(doc.exists){
-      const data = doc.data();
-      document.getElementById("userPoints").textContent = data.points || 0;
-      document.getElementById("userBadges").textContent = data.badges || 0;
-      document.getElementById("profileEmail").textContent = "Email: "+user.email;
-      document.getElementById("profilePoints").textContent = "Points: "+(data.points || 0);
-      document.getElementById("profileBadges").textContent = "Badges: "+(data.badges || 0);
-    }
-  });
+function loadContent(type){
+  const main = document.getElementById('mainContent');
+  let videoSrc="", title="";
+  if(type==='wifi'){ 
+    videoSrc="https://drive.google.com/uc?export=download&id=16PpL6zUBwytc9fnNouqncArauW10icuH";
+    title="WiFi Hacking Challenge";
+  } else if(type==='web'){ 
+    videoSrc="https://drive.google.com/uc?export=download&id=WEB_FILE_ID"; 
+    title="Web Hacking Challenge";
+  } else if(type==='social'){ 
+    videoSrc="https://drive.google.com/uc?export=download&id=SOCIAL_FILE_ID"; 
+    title="Social Engineering Challenge";
+  }
+  main.innerHTML = `
+    <header><h1>${title}</h1></header>
+    <button onclick="backToHome()">⬅ Back</button>
+    <video controls autoplay>
+      <source src="${videoSrc}" type="video/mp4"/>
+    </video>
+  `;
+}
 
-  const rooms = [
-    {title:"Intro to Hacking",description:"Learn basics of ethical hacking.",points:10,progress:50,badge:"New"},
-    {title:"Web Exploitation",description:"Practice web vulnerabilities.",points:20,progress:30,badge:"Hot"},
-    {title:"Crypto Challenges",description:"Learn cryptography basics.",points:15,progress:70,badge:"Pro"}
-  ];
+function backToHome(){
+  const main = document.getElementById('mainContent');
+  main.innerHTML = `
+    <header><h1>Welcome to Dashboard</h1></header>
+    <div id="dashboardHome">
+      <p>Select a challenge from the sidebar to start learning.</p>
+    </div>
+  `;
+}
 
-  const container = document.getElementById('roomCards');
-  rooms.forEach(room=>{
-    const div = document.createElement('div');
-    div.className='card';
-    div.innerHTML=`<h3>${room.title}</h3>
-                   <p>${room.description}</p>
-                   <p>Points: ${room.points}</p>
-                   <div class="progress"><div class="progress-inner" style="width:${room.progress}%"></div></div>
-                   <div class="badge">${room.badge}</div>`;
-    container.appendChild(div);
-  });
-
-  // Operations/Labs
-  const operations = [
-    {title:"Intro to Linux", description:"Learn basic Linux commands.", points:10, progress:40, badge:"New"},
-    {title:"Web Exploitation 101", description:"Find and exploit web vulnerabilities.", points:20, progress:25, badge:"Hot"},
-    {title:"Crypto Basics", description:"Learn cryptography basics and challenges.", points:15, progress:70, badge:"Pro"},
-    {title:"Forensics Lab", description:"Investigate digital evidence.", points:30, progress:10, badge:"New"}
-  ];
-  const opContainer = document.getElementById('operationCards');
-  operations.forEach(op=>{
-    const div=document.createElement('div');
-    div.className='card';
-    div.innerHTML=`<h3>${op.title}</h3>
-                   <p>${op.description}</p>
-                   <p>Points: ${op.points}</p>
-                   <div class="progress"><div class="progress-inner" style="width:${op.progress}%"></div></div>
-                   <div class="badge">${op.badge}</div>`;
-    opContainer.appendChild(div);
+function loadProfile(){
+  const main = document.getElementById('mainContent');
+  const user = auth.currentUser;
+  db.collection('users').doc(user.uid).get().then(doc=>{
+    const data = doc.data();
+    main.innerHTML=`<header><h1>My Profile</h1></header>
+      <div class="profile">
+        <h3>Email: ${data.email}</h3>
+        <h3>Change Password</h3>
+        <input type="password" id="currentPass" placeholder="Current Password"/>
+        <input type="password" id="newPass" placeholder="New Password"/>
+        <button onclick="changePassword()">Update Password</button>
+        <p id="passMsg" style="color:red;"></p>
+      </div>`;
   });
 }
 
-// Profile Modal
-function openProfile(){ document.getElementById('profileModal').style.display='flex'; }
-function closeProfile(){ document.getElementById('profileModal').style.display='none'; }
-
-// Logout
-function logout(){ auth.signOut().then(()=>window.location.href="index.html"); }
-
-// Change Password
 function changePassword(){
-  const current = document.getElementById("currentPassword").value;
-  const newPass = document.getElementById("newPassword").value;
-  const confirm = document.getElementById("confirmPassword").value;
-  const msg = document.getElementById("passMsg");
-  msg.textContent="";
   const user = auth.currentUser;
+  const currentPass = document.getElementById('currentPass').value;
+  const newPass = document.getElementById('newPass').value;
+  const msg = document.getElementById('passMsg');
+  if(!currentPass || !newPass){ msg.textContent="Fill both fields!"; return; }
 
-  if(!current || !newPass || !confirm){ msg.style.color="#f88"; msg.textContent="Fill all fields!"; return;}
-  if(newPass!==confirm){ msg.style.color="#f88"; msg.textContent="New passwords do not match!"; return;}
-
-  const cred = firebase.auth.EmailAuthProvider.credential(user.email, current);
-  user.reauthenticateWithCredential(cred).then(()=>{
-    user.updatePassword(newPass).then(()=>{msg.style.color="#8f8"; msg.textContent="Password changed successfully!";})
-      .catch(err=>{msg.style.color="#f88"; msg.textContent=err.message;});
-  }).catch(err=>{msg.style.color="#f88"; msg.textContent="Current password is incorrect!";});
+  const cred = firebase.auth.EmailAuthProvider.credential(user.email, currentPass);
+  user.reauthenticateWithCredential(cred)
+    .then(()=> user.updatePassword(newPass).then(()=> msg.textContent="Password updated!"))
+    .catch(err=> msg.textContent=err.message);
 }
 </script>
 </body>
