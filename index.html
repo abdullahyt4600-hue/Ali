@@ -23,7 +23,7 @@ header nav a:hover{color:#ce93d8;}
 .modal-content button{padding:10px 20px;border:none;border-radius:5px;background:#8e24aa;color:#fff;cursor:pointer;width:100%;}
 .modal-content button:hover{background:#6a1b9a;}
 .close{color:#fff;float:right;font-size:24px;cursor:pointer;}
-#loginMsg,#signupMsg{margin-top:10px;font-size:0.9rem;color:#f88;}
+#loginMsg{margin-top:10px;font-size:0.9rem;color:#f88;}
 </style>
 </head>
 <body>
@@ -88,7 +88,7 @@ function login(){
   auth.signInWithEmailAndPassword(email,password)
     .then(userCredential=>{
       const userEmail = userCredential.user.email;
-      if(userEmail === "abdullahyt4622@gmail.com"){
+      if(userEmail === "abdullahyt4622@gmail.com"){ // admin
         window.location.href = "admin.html";
       } else {
         window.location.href = "dashboard.html";
