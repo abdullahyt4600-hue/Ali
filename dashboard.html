@@ -11,7 +11,6 @@ body{margin:0;font-family:'Orbitron',sans-serif;background:#0e0e0e;color:#fff;di
 .sidebar a{display:block;color:#fff;text-decoration:none;padding:10px 5px;border-radius:5px;margin-bottom:5px;transition:0.3s;}
 .sidebar a:hover{background:#333;}
 .main{margin-left:250px;padding:20px;flex:1;}
-h1{margin-top:0;}
 button{padding:10px 20px;background:#8e24aa;color:#fff;border:none;border-radius:5px;cursor:pointer;margin-top:10px;}
 button:hover{background:#6a1b9a;}
 iframe{width:100%;height:500px;border:none;border-radius:10px;}
@@ -22,7 +21,6 @@ iframe{width:100%;height:500px;border:none;border-radius:10px;}
 
 <div class="sidebar">
 <h2 id="welcomeUser">Welcome</h2>
-<a href="#" onclick="showSection('home')">Home</a>
 <a href="#" onclick="showSection('wifi')">Select Your Category - WiFi Hacking</a>
 <a href="#" onclick="showSection('linux')">Select Your Category - Linux Basics</a>
 <a href="#" onclick="showSection('pentest')">Select Your Category - Pentesting</a>
@@ -30,11 +28,7 @@ iframe{width:100%;height:500px;border:none;border-radius:10px;}
 </div>
 
 <div class="main">
-<div id="homeSection">
-<h1>Dashboard Home</h1>
-<p>Welcome <span id="userName"></span>! Choose a category from the sidebar to start learning.</p>
-</div>
-
+<!-- Removed Home content -->
 <div id="wifiSection" style="display:none;">
 <h1>WiFi Hacking</h1>
 <p>Learn WiFi security and hacking techniques.</p>
@@ -78,15 +72,13 @@ auth.onAuthStateChanged(user=>{
   db.collection("users").doc(user.uid).get().then(doc=>{
     if(doc.exists){
       const data = doc.data();
-      document.getElementById('userName').textContent = data.name;
-      document.getElementById('welcomeUser').textContent = "Welcome " + data.name;
+      document.getElementById('welcomeUser').textContent = "Welcome " + (data.name || "");
       db.collection("users").doc(user.uid).update({ lastOnline: firebase.firestore.FieldValue.serverTimestamp() });
     }
   });
 });
 
 function showSection(section){
-  document.getElementById('homeSection').style.display = (section==='home')?'block':'none';
   document.getElementById('wifiSection').style.display = (section==='wifi')?'block':'none';
   document.getElementById('linuxSection').style.display = (section==='linux')?'block':'none';
   document.getElementById('pentestSection').style.display = (section==='pentest')?'block':'none';
