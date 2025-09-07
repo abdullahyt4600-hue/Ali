@@ -7,13 +7,13 @@
 <style>
 body{margin:0;font-family:'Orbitron',sans-serif;background:#0e0e0e;color:#fff;padding:20px;}
 h1{color:#ce93d8;}
-table{width:100%;border-collapse:collapse;margin-top:20px;}
+table{width:100%;border-collapse:collapse;margin-top:20px;background:#1e1e1e;}
 th,td{padding:12px;border-bottom:1px solid #444;text-align:left;}
 th{background:#8e24aa;}
 tr:hover{background:#333;}
 .logout{margin-top:20px;padding:10px 20px;background:#8e24aa;border:none;color:#fff;cursor:pointer;}
 .logout:hover{background:#6a1b9a;}
-@media(max-width:768px){table,thead,tbody,th,td,tr{display:block;}th{background:#8e24aa;padding:10px;}td{padding:10px 0;}}
+@media(max-width:768px){table,thead,tbody,th,td,tr{display:block;}th{padding:10px;}td{padding:10px 0;}}
 </style>
 </head>
 <body>
@@ -30,9 +30,7 @@ tr:hover{background:#333;}
       <th>Last Online</th>
     </tr>
   </thead>
-  <tbody id="userList">
-    <tr><td colspan="4">Loading users...</td></tr>
-  </tbody>
+  <tbody id="userList"><tr><td colspan="4">Loading users...</td></tr></tbody>
 </table>
 
 <h2>User Submissions</h2>
@@ -45,9 +43,7 @@ tr:hover{background:#333;}
       <th>Submitted At</th>
     </tr>
   </thead>
-  <tbody id="submissionList">
-    <tr><td colspan="4">Loading submissions...</td></tr>
-  </tbody>
+  <tbody id="submissionList"><tr><td colspan="4">Loading submissions...</td></tr></tbody>
 </table>
 
 <button class="logout" onclick="logout()">Logout</button>
@@ -76,11 +72,11 @@ auth.onAuthStateChanged(user=>{
 
 function loadUsers(){
   db.collection('users').orderBy('createdAt','desc').get().then(snapshot=>{
-    const tbody = document.getElementById('userList');
+    const tbody=document.getElementById('userList');
     tbody.innerHTML='';
     if(snapshot.empty){ tbody.innerHTML='<tr><td colspan="4">No users found</td></tr>'; return; }
     snapshot.forEach(doc=>{
-      const data = doc.data();
+      const data=doc.data();
       const signup = data.createdAt ? data.createdAt.toDate().toLocaleString() : 'N/A';
       const last = data.lastOnline ? data.lastOnline.toDate().toLocaleString() : 'N/A';
       tbody.innerHTML += `<tr><td>${data.name}</td><td>${data.email}</td><td>${signup}</td><td>${last}</td></tr>`;
@@ -88,18 +84,18 @@ function loadUsers(){
   });
 
   db.collection('submissions').orderBy('submittedAt','desc').get().then(snapshot=>{
-    const tbody = document.getElementById('submissionList');
+    const tbody=document.getElementById('submissionList');
     tbody.innerHTML='';
     if(snapshot.empty){ tbody.innerHTML='<tr><td colspan="4">No submissions found</td></tr>'; return; }
     snapshot.forEach(doc=>{
-      const data = doc.data();
+      const data=doc.data();
       const time = data.submittedAt ? data.submittedAt.toDate().toLocaleString() : 'N/A';
       tbody.innerHTML += `<tr><td>${data.email}</td><td>${data.challenge}</td><td>${data.solution}</td><td>${time}</td></tr>`;
     });
   });
 }
 
-function logout(){ auth.signOut().then(()=> window.location.href="index.html"); }
+function logout(){ auth.signOut().then(()=>window.location.href="index.html"); }
 </script>
 </body>
 </html>
