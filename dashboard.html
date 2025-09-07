@@ -5,49 +5,36 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Dashboard - TryHackingMe</title>
 <style>
-body{margin:0;font-family:'Orbitron',sans-serif;background:#0e0e0e;color:#fff;display:flex;height:100vh;}
-.sidebar{width:250px;background:#121212;padding:20px;display:flex;flex-direction:column;}
-.sidebar h2{color:#ce93d8;margin-bottom:30px;}
-.sidebar a{color:#fff;text-decoration:none;padding:10px;border-radius:5px;margin-bottom:10px;display:block;transition:0.3s;}
-.sidebar a:hover{background:#8e24aa;}
-.main-content{flex:1;padding:30px;overflow-y:auto;}
-.welcome{font-size:1.5rem;margin-bottom:20px;}
-.card{background:#1e1e1e;padding:20px;border-radius:10px;margin:10px 0;}
-.card button{padding:10px 20px;border:none;border-radius:5px;background:#8e24aa;color:#fff;cursor:pointer;}
-.card button:hover{background:#6a1b9a;}
-.back-btn{padding:8px 15px;background:#8e24aa;border:none;border-radius:5px;color:#fff;cursor:pointer;margin-bottom:20px;}
-.back-btn:hover{background:#6a1b9a;}
-iframe{width:100%;max-width:800px;height:450px;border-radius:10px;margin-top:20px;}
-@media(max-width:768px){body{flex-direction:column}.sidebar{width:100%;flex-direction:row;overflow-x:auto}.sidebar a{margin-right:10px;margin-bottom:0}.main-content{padding:15px}}
+body{margin:0;font-family:'Orbitron',sans-serif;background:#0e0e0e;color:#fff;}
+header{display:flex;justify-content:space-between;padding:20px;background:#121212;border-bottom:1px solid #333;}
+header h1{color:#ce93d8;}
+header nav a{color:#fff;text-decoration:none;margin-left:20px;font-weight:bold;}
+header nav a:hover{color:#ce93d8;}
+.sidebar{position:fixed;top:70px;left:0;width:200px;height:100%;background:#1e1e1e;padding-top:20px;}
+.sidebar a{display:block;color:#fff;padding:10px 20px;text-decoration:none;margin-bottom:5px;}
+.sidebar a:hover{background:#333;}
+.main{margin-left:220px;padding:20px;}
+button.logout{padding:10px 20px;background:#8e24aa;color:#fff;border:none;cursor:pointer;margin-top:20px;}
+button.logout:hover{background:#6a1b9a;}
+@media(max-width:768px){.sidebar{position:static;width:100%;height:auto;margin-bottom:20px;}.main{margin-left:0;}}
 </style>
 </head>
 <body>
 
+<header>
+  <h1>Dashboard</h1>
+  <nav>
+    <a onclick="logout()">Logout</a>
+  </nav>
+</header>
+
 <div class="sidebar">
-  <h2>TryHackingMe</h2>
-  <a href="#" onclick="showHome()">Home</a>
-  <a href="#" onclick="showWiFi()">WiFi Hacking</a>
-  <a href="#" onclick="showOther()">Other Challenges</a>
-  <a href="#" onclick="logout()">Logout</a>
+  <a href="#" onclick="showWelcome()">Home</a>
+  <a href="#" onclick="showWifi()">WiFi Hacking</a>
 </div>
 
-<div class="main-content">
-  <div id="content">
-    <div class="welcome" id="welcomeUser">Loading...</div>
-    <div id="homeContent">
-      <div class="card"><h3>Welcome</h3><p>Choose a challenge from the menu on the left.</p></div>
-    </div>
-    <div id="wifiContent" style="display:none;">
-      <button class="back-btn" onclick="showHome()">← Back</button>
-      <h2>WiFi Hacking</h2>
-      <iframe src="https://drive.google.com/file/d/16PpL6zUBwytc9fnNouqncArauW10icuH/preview" allowfullscreen allow="autoplay"></iframe>
-    </div>
-    <div id="otherContent" style="display:none;">
-      <button class="back-btn" onclick="showHome()">← Back</button>
-      <h2>Other Challenges</h2>
-      <p>More interactive labs and challenges will appear here.</p>
-    </div>
-  </div>
+<div class="main" id="mainContent">
+  <h2 id="welcomeText">Welcome!</h2>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -69,38 +56,29 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 auth.onAuthStateChanged(user=>{
-  if(user){
-    db.collection('users').doc(user.uid).get().then(doc=>{
-      if(doc.exists){
-        const data = doc.data();
-        document.getElementById('welcomeUser').textContent = `Welcome, ${data.name}!`;
-        db.collection('users').doc(user.uid).update({ lastOnline: firebase.firestore.FieldValue.serverTimestamp() });
-      }
+  if(!user) window.location.href="index.html";
+  else {
+    db.collection("users").doc(user.uid).get().then(doc=>{
+      const name = doc.data()?.name || user.email;
+      document.getElementById('welcomeText').textContent = `Welcome ${name}!`;
     });
-  }else{
-    window.location.href="index.html";
   }
 });
 
-function logout(){
-  auth.signOut().then(()=>{ window.location.href="index.html"; });
+function showWelcome(){
+  const name = document.getElementById('welcomeText').textContent;
+  document.getElementById('mainContent').innerHTML=`<h2>${name}</h2><p>Select an option from the sidebar.</p>`;
 }
 
-function showHome(){
-  document.getElementById('homeContent').style.display='block';
-  document.getElementById('wifiContent').style.display='none';
-  document.getElementById('otherContent').style.display='none';
+function showWifi(){
+  document.getElementById('mainContent').innerHTML=`
+    <h2>WiFi Hacking</h2>
+    <p>Click below to watch tutorial:</p>
+    <iframe src="https://drive.google.com/file/d/1gkcnrhm6FuXIrDVIe9Gd4FCO9QlLWJxn/preview" width="100%" height="400" allow="autoplay"></iframe>
+  `;
 }
-function showWiFi(){
-  document.getElementById('homeContent').style.display='none';
-  document.getElementById('wifiContent').style.display='block';
-  document.getElementById('otherContent').style.display='none';
-}
-function showOther(){
-  document.getElementById('homeContent').style.display='none';
-  document.getElementById('wifiContent').style.display='none';
-  document.getElementById('otherContent').style.display='block';
-}
+
+function logout(){ auth.signOut().then(()=>window.location.href="index.html"); }
 </script>
 </body>
 </html>
