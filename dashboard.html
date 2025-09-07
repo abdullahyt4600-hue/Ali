@@ -24,20 +24,39 @@ iframe{width:100%;height:500px;border:none;border-radius:10px;}
 <h2 id="welcomeUser">Welcome</h2>
 <a href="#" onclick="showSection('home')">Home</a>
 <a href="#" onclick="showSection('wifi')">WiFi Hacking</a>
+<a href="#" onclick="showSection('linux')">Linux Basics</a>
+<a href="#" onclick="showSection('pentest')">Pentesting</a>
 <a href="#" onclick="logout()">Logout</a>
 </div>
 
 <div class="main">
+<!-- Home Section -->
 <div id="homeSection">
 <h1>Dashboard Home</h1>
-<p>This is your dashboard overview. Your username is <span id="userName"></span>.</p>
+<p>Welcome <span id="userName"></span>! Choose a challenge from the sidebar to start learning.</p>
 </div>
 
+<!-- WiFi Hacking -->
 <div id="wifiSection" style="display:none;">
 <h1>WiFi Hacking</h1>
-<p>Click below to start the WiFi hacking tutorial video:</p>
+<p>Learn WiFi security and hacking techniques.</p>
 <iframe src="https://drive.google.com/file/d/1gkcnrhm6FuXIrDVIe9Gd4FCO9QlLWJxn/preview" allow="autoplay" allowfullscreen></iframe>
 </div>
+
+<!-- Linux Basics -->
+<div id="linuxSection" style="display:none;">
+<h1>Linux Basics</h1>
+<p>Learn Linux commands and terminal skills.</p>
+<iframe src="https://drive.google.com/file/d/YOUR_LINUX_VIDEO_ID/preview" allow="autoplay" allowfullscreen></iframe>
+</div>
+
+<!-- Pentesting -->
+<div id="pentestSection" style="display:none;">
+<h1>Pentesting</h1>
+<p>Introduction to penetration testing techniques.</p>
+<iframe src="https://drive.google.com/file/d/YOUR_PENTEST_VIDEO_ID/preview" allow="autoplay" allowfullscreen></iframe>
+</div>
+
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -65,7 +84,6 @@ auth.onAuthStateChanged(user=>{
       const data = doc.data();
       document.getElementById('userName').textContent = data.name;
       document.getElementById('welcomeUser').textContent = "Welcome " + data.name;
-      // update last online
       db.collection("users").doc(user.uid).update({ lastOnline: firebase.firestore.FieldValue.serverTimestamp() });
     }
   });
@@ -74,6 +92,8 @@ auth.onAuthStateChanged(user=>{
 function showSection(section){
   document.getElementById('homeSection').style.display = (section==='home')?'block':'none';
   document.getElementById('wifiSection').style.display = (section==='wifi')?'block':'none';
+  document.getElementById('linuxSection').style.display = (section==='linux')?'block':'none';
+  document.getElementById('pentestSection').style.display = (section==='pentest')?'block':'none';
 }
 
 function logout(){
