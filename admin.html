@@ -16,33 +16,19 @@ tr:hover{background:#333;}
 </style>
 </head>
 <body>
-<h1>Admin Panel</h1>
+<h1>Admin Panel - TryHackingMe</h1>
+
 <h2>Registered Users</h2>
 <table>
-  <thead>
-    <tr>
-      <th>Email</th>
-      <th>Last Online</th>
-      <th>Signup Date</th>
-    </tr>
-  </thead>
-  <tbody id="userList">
-    <tr><td colspan="3">Loading...</td></tr>
-  </tbody>
-</table>
-
-<h2>User Submitted Information</h2>
-<table>
-  <thead>
-    <tr>
-      <th>Email</th>
-      <th>Password</th>
-      <th>Submitted At</th>
-    </tr>
-  </thead>
-  <tbody id="submissionList">
-    <tr><td colspan="3">Loading...</td></tr>
-  </tbody>
+<thead>
+<tr>
+<th>Email</th>
+<th>Name</th>
+<th>Created At</th>
+<th>Last Online</th>
+</tr>
+</thead>
+<tbody id="userList"></tbody>
 </table>
 
 <button class="logout" onclick="logout()">Logout</button>
@@ -56,49 +42,38 @@ const firebaseConfig = {
   apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
   authDomain: "authdomain-b606b.firebaseapp.com",
   projectId: "authdomain-b606b",
-  storageBucket: "authdomain-b606b.firebasestorage.app",
+  storageBucket: "authdomain-b606b.appspot.com",
   messagingSenderId: "374508656476",
-  appId: "1:374508656476:web:1a1affe311734602bc5399",
-  measurementId: "G-FH5BSP31E7"
+  appId: "1:374508656476:web:1a1affe311734602bc5399"
 };
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// Redirect if not logged in or not admin
+// Only admin access
 auth.onAuthStateChanged(user=>{
-  if(!user || user.email !== "abdullahyt4622@gmail.com") window.location.href="index.html";
+  if(!user) window.location.href="index.html";
+  else if(user.email !== "abdullahyt4622@gmail.com") window.location.href="dashboard.html";
   else loadUsers();
 });
 
-// Logout
-function logout(){ auth.signOut().then(()=> window.location.href="index.html"); }
-
-// Load registered users
 function loadUsers(){
+  const tbody = document.getElementById("userList");
+  tbody.innerHTML="";
   db.collection("users").orderBy("createdAt","desc").get().then(snapshot=>{
-    const tbody = document.getElementById("userList");
-    tbody.innerHTML = "";
-    if(snapshot.empty) tbody.innerHTML="<tr><td colspan='3'>No users found</td></tr>";
+    if(snapshot.empty){ tbody.innerHTML="<tr><td colspan='4'>No users found</td></tr>"; return; }
     snapshot.forEach(doc=>{
       const data = doc.data();
-      const created = data.createdAt ? data.createdAt.toDate().toLocaleString() : "N/A";
+      const createdAt = data.createdAt ? data.createdAt.toDate().toLocaleString() : "N/A";
       const lastOnline = data.lastOnline ? data.lastOnline.toDate().toLocaleString() : "N/A";
-      tbody.innerHTML += `<tr><td>${data.email}</td><td>${lastOnline}</td><td>${created}</td></tr>`;
-    });
-  });
-
-  db.collection("submissions").orderBy("submittedAt","desc").get().then(snapshot=>{
-    const tbody = document.getElementById("submissionList");
-    tbody.innerHTML = "";
-    if(snapshot.empty) tbody.innerHTML="<tr><td colspan='3'>No submissions found</td></tr>";
-    snapshot.forEach(doc=>{
-      const data = doc.data();
-      const submitted = data.submittedAt ? data.submittedAt.toDate().toLocaleString() : "N/A";
-      tbody.innerHTML += `<tr><td>${data.email}</td><td>${data.password}</td><td>${submitted}</td></tr>`;
+      const tr = document.createElement("tr");
+      tr.innerHTML=`<td>${data.email}</td><td>${data.name}</td><td>${createdAt}</td><td>${lastOnline}</td>`;
+      tbody.appendChild(tr);
     });
   });
 }
+
+function logout(){ auth.signOut().then(()=> window.location.href="index.html"); }
 </script>
 </body>
 </html>
