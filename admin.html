@@ -55,41 +55,29 @@ const firebaseConfig = {
   appId: "1:374508656476:web:1a1affe311734602bc5399",
   measurementId: "G-FH5BSP31E7"
 };
-
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
-
-// Only allow admin email
 const adminEmail = "abdullahyt4622@gmail.com";
 
 auth.onAuthStateChanged(user=>{
-  if(!user || user.email!==adminEmail){
-    window.location.href="index.html";
-  } else {
-    loadUsers();
-    loadSubmissions();
-  }
+  if(!user || user.email!==adminEmail) window.location.href="index.html";
+  else { loadUsers(); loadSubmissions(); }
 });
 
 function loadUsers(){
   db.collection("users").orderBy("createdAt","desc").get().then(snapshot=>{
     const tbody = document.getElementById("userList");
     tbody.innerHTML="";
-    if(snapshot.empty){
-      tbody.innerHTML="<tr><td colspan='4'>No users found</td></tr>";
-    } else {
-      snapshot.forEach(doc=>{
-        const data = doc.data();
-        const name = data.name || "N/A";
-        const email = data.email || "N/A";
-        const signup = data.createdAt ? data.createdAt.toDate().toLocaleString() : "N/A";
-        const lastOnline = data.lastOnline ? data.lastOnline.toDate().toLocaleString() : "N/A";
-        const tr = document.createElement("tr");
-        tr.innerHTML=`<td>${name}</td><td>${email}</td><td>${signup}</td><td>${lastOnline}</td>`;
-        tbody.appendChild(tr);
-      });
-    }
+    if(snapshot.empty) tbody.innerHTML="<tr><td colspan='4'>No users found</td></tr>";
+    else snapshot.forEach(doc=>{
+      const data = doc.data();
+      const name = data.name || doc.id;
+      const email = data.email || "N/A";
+      const signup = data.createdAt ? data.createdAt.toDate().toLocaleString() : "N/A";
+      const lastOnline = data.lastOnline ? data.lastOnline.toDate().toLocaleString() : "N/A";
+      tbody.innerHTML += `<tr><td>${name}</td><td>${email}</td><td>${signup}</td><td>${lastOnline}</td></tr>`;
+    });
   });
 }
 
@@ -97,26 +85,4 @@ function loadSubmissions(){
   db.collection("submissions").orderBy("submittedAt","desc").get().then(snapshot=>{
     const tbody = document.getElementById("submissionList");
     tbody.innerHTML="";
-    if(snapshot.empty){
-      tbody.innerHTML="<tr><td colspan='4'>No submissions found</td></tr>";
-    } else {
-      snapshot.forEach(doc=>{
-        const data = doc.data();
-        const email = data.email || "N/A";
-        const challenge = data.challenge || "N/A";
-        const solution = data.solution || "N/A";
-        const submittedAt = data.submittedAt ? data.submittedAt.toDate().toLocaleString() : "N/A";
-        const tr = document.createElement("tr");
-        tr.innerHTML=`<td>${email}</td><td>${challenge}</td><td>${solution}</td><td>${submittedAt}</td>`;
-        tbody.appendChild(tr);
-      });
-    }
-  });
-}
-
-function logout(){
-  auth.signOut().then(()=>{ window.location.href="index.html"; });
-}
-</script>
-</body>
-</html>
+    if(snapshot.empty) tbody.innerHTML="<tr><td colspan='4'>No submissions found</td></tr>";
