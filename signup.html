@@ -6,26 +6,22 @@
 <title>Sign Up - TryHackingMe</title>
 <style>
 body{margin:0;font-family:'Orbitron',sans-serif;background:#0e0e0e;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh;}
-.container{background:#1e1e1e;padding:30px;border-radius:10px;width:90%;max-width:400px;}
-h2{color:#ce93d8;text-align:center;margin-bottom:20px;}
-input{width:100%;padding:10px;margin:10px 0;border:none;border-radius:5px;}
-button{width:100%;padding:10px;background:#8e24aa;color:#fff;border:none;border-radius:5px;cursor:pointer;font-weight:bold;}
-button:hover{background:#6a1b9a;}
-p{text-align:center;margin-top:10px;}
-a{text-decoration:none;color:#ce93d8;font-weight:bold;}
-#errorMsg{color:#f88;font-size:0.9rem;margin-top:5px;}
+.signup-container{background:#1e1e1e;padding:40px;border-radius:10px;width:300px;text-align:center;}
+.signup-container input{width:100%;padding:10px;margin:10px 0;border:none;border-radius:5px;background:#2b2b2b;color:#fff;}
+.signup-container button{padding:10px 20px;border:none;border-radius:5px;background:#8e24aa;color:#fff;cursor:pointer;width:100%;}
+.signup-container button:hover{background:#6a1b9a;}
+#signupMsg{margin-top:10px;color:#f88;font-size:0.9rem;}
 </style>
 </head>
 <body>
-
-<div class="container">
+<div class="signup-container">
   <h2>Create Account</h2>
-  <input type="text" id="name" placeholder="Your Name"/>
-  <input type="email" id="email" placeholder="Email"/>
-  <input type="password" id="password" placeholder="Password"/>
+  <input type="text" id="signupName" placeholder="Full Name"/>
+  <input type="email" id="signupEmail" placeholder="Email"/>
+  <input type="password" id="signupPassword" placeholder="Password"/>
   <button onclick="signup()">Sign Up</button>
-  <p id="errorMsg"></p>
-  <p>Already have account? <a href="index.html">Login</a></p>
+  <p id="signupMsg"></p>
+  <p>Already have an account? <a href="index.html">Login</a></p>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -39,41 +35,41 @@ const firebaseConfig = {
   projectId: "authdomain-b606b",
   storageBucket: "authdomain-b606b.appspot.com",
   messagingSenderId: "374508656476",
-  appId: "1:374508656476:web:1a1affe311734602bc5399"
+  appId: "1:374508656476:web:1a1affe311734602bc5399",
+  measurementId: "G-FH5BSP31E7"
 };
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-
 const auth = firebase.auth();
 const db = firebase.firestore();
 
 function signup(){
-  const name = document.getElementById('name').value.trim();
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
-  const errorMsg = document.getElementById('errorMsg');
-  errorMsg.textContent='';
+  const name = document.getElementById('signupName').value;
+  const email = document.getElementById('signupEmail').value;
+  const password = document.getElementById('signupPassword').value;
+  const msg = document.getElementById('signupMsg');
+  msg.textContent="";
 
-  if(!name || !email || !password){ errorMsg.textContent="All fields are required!"; return; }
+  if(!name || !email || !password){ msg.textContent="Fill all fields!"; return; }
 
   auth.createUserWithEmailAndPassword(email,password)
-    .then(userCredential=>{
+    .then((userCredential)=>{
       const user = userCredential.user;
-      // Save extra info in Firestore
+      // Save to Firestore
       db.collection('users').doc(user.uid).set({
         name: name,
         email: email,
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         lastOnline: firebase.firestore.FieldValue.serverTimestamp()
       }).then(()=>{
-        // redirect to login
-        window.location.href="index.html";
+        msg.style.color="#8f8";
+        msg.textContent="Account created! Redirecting to login...";
+        setTimeout(()=>{ window.location.href="index.html"; }, 2000);
       });
     })
-    .catch(error=>{
-      errorMsg.textContent = error.message;
+    .catch((error)=>{
+      msg.textContent = error.message;
     });
 }
 </script>
-
 </body>
 </html>
