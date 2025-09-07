@@ -13,7 +13,79 @@ button:hover{background:#6a1b9a;}
 .message{margin-top:10px;color:#f88;}
 </style>
 </head>
+<body><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Sign Up - HackLearn</title>
+<style>
+body{font-family:'Orbitron',sans-serif;background:#121212;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh;}
+.signup-box{background:#1e1e1e;padding:30px;border-radius:10px;box-shadow:0 0 10px #000;}
+input{display:block;width:100%;margin-bottom:15px;padding:10px;border:none;border-radius:5px;}
+button{padding:10px 20px;border:none;border-radius:5px;background:#8e24aa;color:#fff;cursor:pointer;width:100%;}
+button:hover{background:#6a1b9a;}
+.message{margin-top:10px;color:#f88;}
+</style>
+</head>
 <body>
+<div class="signup-box">
+  <h2>Sign Up</h2>
+  <input type="email" id="email" placeholder="Email"/>
+  <input type="password" id="password" placeholder="Password"/>
+  <button onclick="signup()">Sign Up</button>
+  <div class="message" id="message"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyAmSC92mozosP8JdQGOzF7KE9wCa-h4b_E",
+  authDomain: "authdomain-b606b.firebaseapp.com",
+  projectId: "authdomain-b606b",
+  storageBucket: "authdomain-b606b.firebasestorage.app",
+  messagingSenderId: "374508656476",
+  appId: "1:374508656476:web:1a1affe311734602bc5399",
+  measurementId: "G-FH5BSP31E7"
+};
+if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+function signup(){
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const msg = document.getElementById("message");
+  msg.textContent = "";
+
+  if(!email || !password){ msg.textContent="Fill all fields!"; return; }
+
+  auth.createUserWithEmailAndPassword(email,password)
+    .then(userCredential=>{
+      const user = userCredential.user;
+      db.collection("users").doc(user.uid).set({
+        email: user.email,
+        points:0,
+        badges:0,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(()=>{
+        msg.style.color="#8f8";
+        msg.textContent="Signup successful! Redirecting...";
+        setTimeout(()=>{window.location.href="dashboard.html";},2000);
+      });
+    })
+    .catch(error=>{
+      msg.style.color="#f88";
+      msg.textContent=error.message;
+    });
+}
+</script>
+</body>
+</html>
+
 <div class="signup-box">
   <h2>Sign Up</h2>
   <input type="email" id="email" placeholder="Email"/>
@@ -68,3 +140,4 @@ function signup(){
 </script>
 </body>
 </html>
+
