@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Admin Panel - TryHackingMe</title>
 <style>
-body{margin:0;font-family:'Orbitron',sans-serif;background:#0e0e0e;color:#fff;padding:20px;}
+body{font-family:'Orbitron',sans-serif;background:#0e0e0e;color:#fff;padding:20px;}
 h1{color:#ce93d8;}
 table{width:100%;border-collapse:collapse;margin-top:20px;}
 th,td{padding:12px;border-bottom:1px solid #444;text-align:left;}
@@ -13,21 +13,16 @@ th{background:#8e24aa;}
 tr:hover{background:#333;}
 .logout{margin-top:20px;padding:10px 20px;background:#8e24aa;border:none;color:#fff;cursor:pointer;}
 .logout:hover{background:#6a1b9a;}
-@media(max-width:768px){table,th,td{font-size:12px;}}
 </style>
 </head>
 <body>
+
 <h1>Admin Panel - TryHackingMe</h1>
 
 <h2>Registered Users</h2>
 <table>
 <thead>
-<tr>
-<th>Name</th>
-<th>Email</th>
-<th>Signup Date</th>
-<th>Last Online</th>
-</tr>
+<tr><th>Name</th><th>Email</th><th>Signup Date</th><th>Last Online</th></tr>
 </thead>
 <tbody id="userList"><tr><td colspan="4">Loading users...</td></tr></tbody>
 </table>
@@ -35,12 +30,7 @@ tr:hover{background:#333;}
 <h2>User Submissions</h2>
 <table>
 <thead>
-<tr>
-<th>Email</th>
-<th>Challenge</th>
-<th>Solution</th>
-<th>Submitted At</th>
-</tr>
+<tr><th>Email</th><th>Challenge</th><th>Solution</th><th>Submitted At</th></tr>
 </thead>
 <tbody id="submissionList"><tr><td colspan="4">Loading submissions...</td></tr></tbody>
 </table>
@@ -67,43 +57,28 @@ const db = firebase.firestore();
 
 auth.onAuthStateChanged(user=>{
   if(!user){ window.location.href="index.html"; return; }
-  if(user.email!=="abdullahyt4622@gmail.com"){ window.location.href="dashboard.html"; return; }
-  loadUsers();
-  loadSubmissions();
-});
+  if(user.email !== "abdullahyt4622@gmail.com"){ window.location.href="dashboard.html"; return; }
 
-function loadUsers(){
-  const tbody = document.getElementById('userList');
+  const userList = document.getElementById('userList');
   db.collection("users").orderBy("createdAt","desc").get().then(snapshot=>{
-    if(snapshot.empty){ tbody.innerHTML='<tr><td colspan="4">No users found</td></tr>'; return; }
-    tbody.innerHTML='';
+    if(snapshot.empty){ userList.innerHTML='<tr><td colspan="4">No users found</td></tr>'; return; }
+    userList.innerHTML='';
     snapshot.forEach(doc=>{
       const data = doc.data();
       const createdAt = data.createdAt ? data.createdAt.toDate().toLocaleString() : "N/A";
       const lastOnline = data.lastOnline ? data.lastOnline.toDate().toLocaleString() : "N/A";
       const tr = document.createElement('tr');
-      tr.innerHTML=`<td>${data.name}</td><td>${data.email}</td><td>${createdAt}</td><td>${lastOnline}</td>`;
-      tbody.appendChild(tr);
+      tr.innerHTML=`<td>${data.name||'N/A'}</td><td>${data.email}</td><td>${createdAt}</td><td>${lastOnline}</td>`;
+      userList.appendChild(tr);
     });
   });
-}
 
-function loadSubmissions(){
-  const tbody = document.getElementById('submissionList');
+  const submissionList = document.getElementById('submissionList');
   db.collection("submissions").orderBy("submittedAt","desc").get().then(snapshot=>{
-    if(snapshot.empty){ tbody.innerHTML='<tr><td colspan="4">No submissions found</td></tr>'; return; }
-    tbody.innerHTML='';
+    if(snapshot.empty){ submissionList.innerHTML='<tr><td colspan="4">No submissions found</td></tr>'; return; }
+    submissionList.innerHTML='';
     snapshot.forEach(doc=>{
       const data = doc.data();
       const submittedAt = data.submittedAt ? data.submittedAt.toDate().toLocaleString() : "N/A";
       const tr = document.createElement('tr');
-      tr.innerHTML=`<td>${data.email}</td><td>${data.challenge}</td><td>${data.solution}</td><td>${submittedAt}</td>`;
-      tbody.appendChild(tr);
-    });
-  });
-}
-
-function logout(){ auth.signOut().then(()=>{ window.location.href="index.html"; }); }
-</script>
-</body>
-</html>
+      tr.innerHTML=`<td>${data.email
