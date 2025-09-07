@@ -91,8 +91,6 @@ function login(){
   auth.signInWithEmailAndPassword(email,password)
     .then((userCredential)=>{
       const userEmail = userCredential.user.email;
-
-      // Update last online
       db.collection("users").doc(userCredential.user.uid).update({
         lastOnline: firebase.firestore.FieldValue.serverTimestamp()
       });
@@ -103,9 +101,7 @@ function login(){
         window.location.href = "dashboard.html";
       }
     })
-    .catch((error)=>{
-      msg.textContent = "Email or password is incorrect!";
-    });
+    .catch(()=>{ msg.textContent = "Email or password is incorrect!"; });
 }
 
 window.onclick = function(e){
