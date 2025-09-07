@@ -10,7 +10,7 @@ header{display:flex;justify-content:space-between;align-items:center;padding:20p
 header h1{color:#ce93d8;}
 header nav a{margin-left:20px;color:#fff;text-decoration:none;font-weight:bold;cursor:pointer;transition:0.3s;}
 header nav a:hover{color:#ce93d8;}
-.hero{display:flex;flex-direction:row;justify-content:space-around;align-items:center;height:90vh;padding:20px;}
+.hero{display:flex;flex-wrap:wrap;justify-content:space-around;align-items:center;height:90vh;padding:20px;}
 .hero .text{max-width:500px;}
 .hero h1{font-size:3rem;margin-bottom:20px;}
 .hero p{font-size:1.2rem;margin-bottom:30px;}
@@ -24,6 +24,7 @@ header nav a:hover{color:#ce93d8;}
 .modal-content button:hover{background:#6a1b9a;}
 .close{color:#fff;float:right;font-size:24px;cursor:pointer;}
 #loginMsg{margin-top:10px;font-size:0.9rem;color:#f88;}
+@media(max-width:768px){.hero{flex-direction:column;}.hero img{margin-top:20px;}}
 </style>
 </head>
 <body>
@@ -72,7 +73,6 @@ const firebaseConfig = {
 };
 if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
-const db = firebase.firestore();
 
 function openLogin(){ document.getElementById('loginModal').style.display='flex'; }
 function closeLogin(){ document.getElementById('loginModal').style.display='none'; }
