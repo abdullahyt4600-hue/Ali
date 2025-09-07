@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>WiFi Hacking - TryHackingMe</title>
+<style>
+body{margin:0;font-family:'Orbitron',sans-serif;background:#0e0e0e;color:#fff;}
+header{display:flex;justify-content:space-between;align-items:center;padding:20px 50px;background:#121212;border-bottom:1px solid #333;}
+header h1{color:#ce93d8;}
+header nav a{margin-left:20px;color:#fff;text-decoration:none;font-weight:bold;cursor:pointer;transition:0.3s;}
+header nav a:hover{color:#ce93d8;}
+.video-container{display:flex;justify-content:center;align-items:center;padding:30px;}
+iframe{max-width:90%;max-height:80vh;border-radius:10px;box-shadow:0 0 20px #000;}
+.back-btn{padding:10px 20px;background:#8e24aa;border:none;border-radius:5px;color:#fff;cursor:pointer;transition:0.3s;}
+.back-btn:hover{background:#6a1b9a;}
+@media (max-width:768px){
+  iframe{width:100%;height:250px;}
+  header{flex-direction:column;align-items:flex-start;}
+  header nav{margin-top:10px;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>WiFi Hacking</h1>
+  <nav>
+    <button class="back-btn" onclick="goBack()">← Back</button>
+  </nav>
+</header>
+
+<div class="video-container">
+  <iframe src="https://drive.google.com/file/d/16PpL6zUBwytc9fnNouqncArauW10icuH/preview" 
+          allow="autoplay" allowfullscreen></iframe>
+</div>
+
+<script>
+function goBack(){
+  window.history.back();
+}
+</script>
+
+</body>
+</html>
