@@ -1,30 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Create Account - TryHackingMe</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Dashboard - TryHackingMe</title>
 <style>
-body{margin:0;font-family:'Orbitron',sans-serif;background:#121212;color:#fff;display:flex;justify-content:center;align-items:center;height:100vh;}
-.container{width:90%;max-width:400px;padding:20px;background:#1e1e1e;border-radius:10px;}
-h1{color:#ce93d8;text-align:center;margin-bottom:20px;}
-input{width:100%;padding:12px;margin:10px 0;border-radius:5px;border:none;background:#2b2b2b;color:#fff;}
-button{width:100%;padding:12px;background:#8e24aa;color:#fff;border:none;border-radius:5px;cursor:pointer;font-weight:bold;}
+body{margin:0;font-family:'Orbitron',sans-serif;background:#121212;color:#fff;display:flex;flex-direction:row;}
+.sidebar{width:250px;background:#1e1e1e;height:100vh;position:fixed;overflow-y:auto;padding-top:20px;}
+.sidebar h2{text-align:center;color:#ce93d8;margin-bottom:20px;}
+.sidebar a{display:block;padding:12px 20px;color:#fff;text-decoration:none;margin:5px 0;border-radius:5px;transition:0.3s;}
+.sidebar a:hover{background:#6a1b9a;}
+.main{margin-left:250px;padding:20px;width:100%;}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+header h1{color:#ce93d8;}
+button{padding:10px 20px;background:#8e24aa;color:#fff;border:none;border-radius:5px;cursor:pointer;}
 button:hover{background:#6a1b9a;}
-.error{color:red;text-align:center;margin-top:10px;}
-p{text-align:center;margin-top:10px;}
-a{color:#ce93d8;text-decoration:none;}
-a:hover{text-decoration:underline;}
+video{width:100%;max-width:800px;border-radius:10px;margin-top:20px;}
+.profile{margin-top:20px;background:#1e1e1e;padding:20px;border-radius:10px;}
+.profile h3{margin-top:0;}
+.profile input{width:100%;padding:10px;margin:5px 0;border:none;border-radius:5px;background:#2b2b2b;color:#fff;}
+@media(max-width:768px){.sidebar{width:100%;height:auto;position:relative}.main{margin-left:0;}}
 </style>
 </head>
 <body>
-<div class="container">
-  <h1>Create Account</h1>
-  <input type="email" id="email" placeholder="Email"/>
-  <input type="password" id="password" placeholder="Password"/>
-  <button onclick="signup()">Sign Up</button>
-  <p class="error" id="error"></p>
-  <p>Already have an account? <a href="index.html">Login here</a></p>
+
+<div class="sidebar">
+  <h2>TryHackingMe</h2>
+  <a onclick="loadContent('wifi')">WiFi Hacking</a>
+  <a onclick="loadContent('web')">Web Hacking</a>
+  <a onclick="loadContent('social')">Social Engineering</a>
+  <a onclick="loadProfile()">My Profile</a>
+  <a onclick="logout()">Logout</a>
+</div>
+
+<div class="main" id="mainContent">
+  <header>
+    <h1>Welcome!</h1>
+  </header>
+  <p>Select a challenge from the sidebar to start learning.</p>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -45,26 +58,58 @@ if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-function signup(){
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  const errorEl = document.getElementById("error");
-  errorEl.textContent = "";
+// Redirect if not logged in
+auth.onAuthStateChanged(user=>{
+  if(!user) window.location.href="index.html";
+});
 
-  if(!email || !password){ errorEl.textContent="Please enter email and password!"; return; }
+// Logout
+function logout(){ auth.signOut().then(()=> window.location.href="index.html"); }
 
-  auth.createUserWithEmailAndPassword(email,password)
-  .then(cred=>{
-    db.collection("users").doc(cred.user.uid).set({
-      email: email,
-      password: password,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-      lastOnline: firebase.firestore.FieldValue.serverTimestamp(),
-      banned:false,
-      banTimeout:null
-    }).then(()=> window.location.href="index.html");
-  })
-  .catch(err=>{ errorEl.textContent=err.message; });
+// Load video content
+function loadContent(type){
+  const main = document.getElementById('mainContent');
+  let videoSrc="";
+  if(type==='wifi') videoSrc="assets/wifi.mp4";
+  else if(type==='web') videoSrc="assets/web.mp4";
+  else if(type==='social') videoSrc="assets/social.mp4";
+
+  main.innerHTML=`<header><h1>${type.replace(/^\w/,(c)=>c.toUpperCase())} Challenge</h1></header>
+  <video controls autoplay>
+    <source src="${videoSrc}" type="video/mp4"/>
+    Your browser does not support the video tag.
+  </video>`;
+}
+
+// Load profile
+function loadProfile(){
+  const main = document.getElementById('mainContent');
+  const user = auth.currentUser;
+  db.collection('users').doc(user.uid).get().then(doc=>{
+    const data = doc.data();
+    main.innerHTML=`<header><h1>My Profile</h1></header>
+      <div class="profile">
+        <h3>Email: ${data.email}</h3>
+        <h3>Change Password</h3>
+        <input type="password" id="currentPass" placeholder="Current Password"/>
+        <input type="password" id="newPass" placeholder="New Password"/>
+        <button onclick="changePassword()">Update Password</button>
+        <p id="passMsg" style="color:red;"></p>
+      </div>`;
+  });
+}
+
+function changePassword(){
+  const user = auth.currentUser;
+  const currentPass = document.getElementById('currentPass').value;
+  const newPass = document.getElementById('newPass').value;
+  const msg = document.getElementById('passMsg');
+  if(!currentPass || !newPass){ msg.textContent="Fill both fields!"; return; }
+
+  const cred = firebase.auth.EmailAuthProvider.credential(user.email, currentPass);
+  user.reauthenticateWithCredential(cred)
+    .then(()=> user.updatePassword(newPass).then(()=> msg.textContent="Password updated!"))
+    .catch(err=> msg.textContent=err.message);
 }
 </script>
 </body>
